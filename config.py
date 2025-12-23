@@ -1,5 +1,5 @@
 # Общее количество строчек кода
-all_line = '5555'
+all_line = '7068'
 
 # Каталог настроек
 settings_path = 'settings'
