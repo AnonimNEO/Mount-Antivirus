@@ -1,0 +1,41 @@
+Библиотеки Используемые в проекте:
+
+Loguru 0.7.3 (выпущена 6 декабря 2024 года) - https://loguru.readthedocs.io/en/stable/index.html
+Авторы: delgan.py@gmail.com
+Лицензия: MIT
+
+DateTime 5.5 (выпущена 21 марта 2024 года)
+Авторы: Zope Foundation and Contributors - zope-dev@zope.org
+Лицензия: Zope Public License (ZPL 2.1)
+
+Nuitka 2.6.6 (выпущена 15 февраля 2025 года) - https://nuitka.net/
+Авторы: Kay.Hayen@gmail.com
+Лицензия: Apache Software License (Apache License, Version 2.0)
+
+pywin32 308 (выпущена 12 октября 2024 года)
+Авторы: mhammond@skippinet.com.au
+Лицензия: Python Software Foundation License (PSF)
+
+pystray 0.19.5 (выпущена 17 сентября 2023 года)
+Авторы: moses.palmer@gmail.com
+Лицензия: GNU Lesser General Public License v3 (LGPLv3) (LGPLv3)
+
+psutil 6.1.1 (выпущена 19 декабря 2024 года)
+Авторы: g.rodola@gmail.com
+Лицензия: BSD License (BSD-3-Clause)
+
+pygame 2.6.1 (выпущена 29 сентября 2024 года)
+Авторы: pygame@pygame.org
+Лицензия: GNU Library or Lesser General Public License (LGPL) (LGPL)
+
+elevate 0.1.3 (выпущена 22 мая 2018 года)
+Авторы: barney.gale@gmail.com
+Лицензия: MIT
+
+path 17.1.0 (выпущена: 28 декабря 2024 года)
+Авторы: jason.orendorff@gmail.com
+Лицензия: MIT
+
+ordered-set 4.1.0 (выпущена 26 января 2022 года)
+Авторы: gh@arborelia.net
+Лицензия: OSI Approved :: MIT License
