@@ -2,7 +2,7 @@
 #Вы имеете право копировать, изменять, распространять, взимать плату за физический акт передачи копии, и вы можете по своему усмотрению предлагать гарантийную защиту в обмен на плату
 #ДЛЯ ИСПОЛЬЗОВАНИЯ ДАННОГО СВОБОДНОГО ПРОГРАММНОГО ОБЕСПЕЧЕНИЯ, ВАМ НЕ ТРЕБУЕТСЯ ПРИНЯТИЕ ЛИЦЕНЗИИ Gnu GPL v3.0 или более поздней версии
 #В СЛУЧАЕ РАСПРОСТРАНЕНИЯ ОРИГИНАЛЬНОЙ ПРОГРАММЫ И/ИЛИ МОДЕРНИЗИРОВАННОЙ ВЕРСИИ И/ИЛИ ИСПОЛЬЗОВАНИЕ ИСХОДНИКОВ В СВОЕЙ ПРОГРАММЕ, ВЫ ОБЯЗАНЫ ЗАДОКУМЕНТИРОВАТЬ ВСЕ ИЗМЕНЕНИЯ В КОДЕ И ПРЕДОСТАВИТЬ ПОЛЬЗОВАТЕЛЯМ ВОЗМОЖНОСТЬ ПОЛУЧИТЬ ИСХОДНИКИ ВАШЕЙ КОПИИ ПРОГРАММЫ, А ТАКЖЕ УКАЗАТЬ АВТОРСТВО ДАННОГО ПРОГРАММНОГО ОБЕСПЕЧЕНИЯ
-#ПРИ РАСПРОСТРАНЕНИИ ПРОГРАММЫ ВЫ ОБЯЗАНЫ ПРЕДОСТАВИТЬ ВСЕ ТЕЖЕ ПРАВА ПОЛЬЗОВАТЕЛЮ ЧТО И МЫ ВАМ, А ТАКЖЕ ЛИЦЕНЗИЯ GPL v3
+#ПРИ РАСПРОСТРАНЕНИЯ ПРОГРАММЫ ВЫ ОБЯЗАНЫ ПРЕДОСТАВИТЬ ВСЕ ТЕЖЕ ПРАВА ПОЛЬЗОВАТЕЛЮ ЧТО И МЫ ВАМ, А ТАКЖЕ ЛИЦЕНЗИЯ GPL v3
 #Прочитать полную версию лицензии вы можете по ссылке Фонда Свободного Программного Обеспечения - https://www.gnu.org/licenses/gpl-3.0.html
 #Или в файле COPYING.txt в архиве с установщиком
 #Copyleft 🄯 NEO Organization, Departament K 2024 - 2025
@@ -30,7 +30,7 @@ from RS import random_string
 from OF import get_current_disc, Psutil, get_offline_reg_path, loaded_hive_names
 
 global ARM_data, autorun_master_version, REG_TYPE_MAP, REG_TYPE_MAP_REV, CREATABLE_REG_TYPES, ARM_CORE_GLOBALS, GUI_ELEMENTS, ultimate_load_cpu, ultimate_load_gpu, ultimate_load_ram, ultimate_load_lam, loaded_hive_names
-autorun_master_version = "3.0.0 Beta"
+autorun_master_version = "3.1.1 Beta"
 #loaded_hive_names = []
 
 REG_TYPE_MAP = {
@@ -207,6 +207,11 @@ def ARM(run_in_recovery):
                  "AppInit_DLLs", "x32"),
                 (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\Wow6432Node\Microsoft\Windows NT\CurrentVersion\Windows",
                  "LoadAppInit_DLLs", "x32"),
+            ],
+            "CmdLine": [
+                (winreg.HKEY_LOCAL_MACHINE, r"SYSTEM\Setup", "CmdLine"),
+                (winreg.HKEY_LOCAL_MACHINE, r"SYSTEM\Setup", "SetupType"),
+                (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System", "EnableCursorSuppression"),
             ]
         },
         #Добавляем карту для преобразования констант HKEY_ в строки
@@ -420,6 +425,47 @@ def ARM(run_in_recovery):
                         "Имя Параметра": value_name,
                         "Битность": bitness,
                         "Значение Параметра": "Ошибка",
+                        "Тип Параметра": "Ошибка",
+                        "Путь Параметра": full_path,
+                        "hkey": hkey_const,
+                        "subkey": subkey_path,
+                        "value_type": winreg.REG_NONE
+                    })
+            return ARM_data
+
+
+        #Получаем значения параметров для вкладки CmdLine
+        def get_cmdline_startup(ARM_CORE_GLOBALS):
+            reg_keys = ARM_CORE_GLOBALS["REG_KEYS"]
+            hkey_map = ARM_CORE_GLOBALS["HKEY_MAP"]
+            ARM_data = []
+            for hkey_const, subkey_path, value_name in reg_keys["CmdLine"]:
+                if run_in_recovery:
+                    final_hkey, final_subkey = get_offline_reg_path(hkey_const, subkey_path, ARM_CORE_GLOBALS, run_in_recovery)
+                else:
+                    final_hkey = hkey_const
+                    final_subkey = subkey_path
+
+                hkey_name = hkey_map.get(hkey_const, str(hkey_const))
+                full_path = f"{hkey_name}\\{subkey_path}"
+
+                try:
+                    with winreg.OpenKey(final_hkey, final_subkey, 0, winreg.KEY_READ) as key:
+                        value, reg_type = winreg.QueryValueEx(key, value_name)
+                        ARM_data.append({
+                            "Имя Параметра": value_name,
+                            "Значение Параметра": str(value),
+                            "Тип Параметра": REG_TYPE_MAP.get(reg_type),
+                            "Путь Параметра": full_path,
+                            "hkey": hkey_const,
+                            "subkey": subkey_path,
+                            "value_type": reg_type
+                        })
+                except Exception as e:
+                    logger.error(f"ARM - Ошибка при считывании параметра {value_name} из {full_path}:\n{e}")
+                    ARM_data.append({
+                        "Имя Параметра": value_name,
+                        "Значение Параметра": "Ошибка или отсутствует",
                         "Тип Параметра": "Ошибка",
                         "Путь Параметра": full_path,
                         "hkey": hkey_const,
@@ -923,6 +969,9 @@ def ARM(run_in_recovery):
             elif gui_elements["current_tab"] == "AppInit_DLLs":
                 columns = ["Имя Параметра", "Битность", "Значение Параметра", "Путь Параметра"]
                 headings = dict(zip(columns, columns))
+            elif gui_elements["current_tab"] == "CmdLine":
+                columns = ("Имя Параметра", "Значение Параметра", "Тип Параметра", "Путь Параметра")
+                headings = dict(zip(columns, columns))
             elif gui_elements["current_tab"] == "Планировщик":
                 columns = ("Имя", "Вкл/Выкл", "Путь", "Автор")
                 headings = dict(zip(columns, columns))
@@ -936,14 +985,20 @@ def ARM(run_in_recovery):
                     text=headings.get(col, col),
                     command=lambda _col=col: sort_treeview_column(gui_elements, _col)
                 )
-                gui_elements["tree"].column(col, width=150, anchor=tk.W)
+                gui_elements["tree"].column(col, width=100, anchor=tk.W)
 
             if columns:
-                gui_elements["tree"].column(columns[0], width=250, anchor=tk.W)
+                gui_elements["tree"].column(columns[0], width=150, anchor=tk.W)
                 if gui_elements["current_tab"] == "AppInit_DLLs":
-                        gui_elements["tree"].column(columns[3], width=400, anchor=tk.W)
-                if gui_elements["current_tab"] in ["Реестр", "Системная"]:
-                        gui_elements["tree"].column(columns[3], width=300, anchor=tk.W)
+                        gui_elements["tree"].column(columns[0], width=75, anchor=tk.W)
+                        gui_elements["tree"].column(columns[1], width=15, anchor=tk.W)
+                        gui_elements["tree"].column(columns[2], width=150, anchor=tk.W)
+                        gui_elements["tree"].column(columns[3], width=75, anchor=tk.W)
+                if gui_elements["current_tab"] in ["Реестр", "Системная", "CmdLine"]:
+                        gui_elements["tree"].column(columns[0], width=100, anchor=tk.W)
+                        gui_elements["tree"].column(columns[1], width=250, anchor=tk.W)
+                        gui_elements["tree"].column(columns[2], width=50, anchor=tk.W)
+                        gui_elements["tree"].column(columns[3], width=75, anchor=tk.W)
                 if gui_elements["current_tab"] == "Планировщик":
                     gui_elements["tree"].column(columns[0], width=175, anchor=tk.W)
                     gui_elements["tree"].column(columns[1], width=65, anchor=tk.W)
@@ -1011,6 +1066,9 @@ def ARM(run_in_recovery):
             elif current_tab == "AppInit_DLLs":
                 gui_elements["treeview_data"] = get_dll_startup(ARM_CORE_GLOBALS)
                 columns = ["Имя Параметра", "Битность", "Значение Параметра", "Путь Параметра"]
+            elif current_tab == "CmdLine":
+                gui_elements["treeview_data"] = get_cmdline_startup(ARM_CORE_GLOBALS)
+                columns = ["Имя Параметра", "Значение Параметра", "Тип Параметра", "Путь Параметра"]
             elif current_tab == "Планировщик":
                 gui_elements["treeview_data"] = get_task_scheduler_startup()
                 columns = ["Имя", "Вкл/Выкл", "Путь", "Автор"]
@@ -1052,7 +1110,7 @@ def ARM(run_in_recovery):
 
             menu = tk.Menu(master, tearoff=0)
 
-            if current_tab != "Системная" and current_tab != "Пользовательская" and current_tab != "Планировщик":
+            if current_tab != "Системная" and current_tab != "Пользовательская" and current_tab != "Планировщик" and current_tab != "CmdLine":
                 create_menu = tk.Menu(menu, tearoff=0)
 
                 if current_tab in ["Реестр", "AppInit_DLLs"]:
@@ -1079,7 +1137,7 @@ def ARM(run_in_recovery):
                     menu.add_separator()
                     menu.add_command(label="Удалить Файл (Delete)", command=lambda: confirm_and_delete_file(gui_elements, file_path, file_name, item_id))
 
-                elif current_tab in ["Реестр", "Системная", "AppInit_DLLs"]:
+                elif current_tab in ["Реестр", "Системная", "AppInit_DLLs", "CmdLine"]:
                     reg_name = item_data["Имя Параметра"]
                     reg_path = item_data["Путь Параметра"]
 
@@ -1277,7 +1335,7 @@ def ARM(run_in_recovery):
                 confirm_and_set_task_state(gui_elements, task_path_full, task_name, not is_enabled, item_id)
                 return "break"
 
-            elif keysym == "Delete" and current_tab not in ["Системная", "AppInit_DLLs"]:
+            elif keysym == "Delete" and current_tab not in ["Системная", "AppInit_DLLs", "CmdLine"]:
                 if current_tab == "Пользовательская":
                     confirm_and_delete_file(gui_elements, item_data["Путь Параметра"], item_data["Имя Файла"], item_id)
                 elif current_tab == "Реестр":
@@ -1355,7 +1413,7 @@ def ARM(run_in_recovery):
         GUI_ELEMENTS["notebook"].pack(pady=10, padx=10, fill="both", expand=True)
         GUI_ELEMENTS["notebook"].bind("<<NotebookTabChanged>>", lambda e: on_tab_change(e, GUI_ELEMENTS, ARM_CORE_GLOBALS))
 
-        tab_names = ["Пользовательская", "Реестр", "Системная", "AppInit_DLLs", "Планировщик"]
+        tab_names = ["Пользовательская", "Реестр", "Системная", "AppInit_DLLs", "CmdLine", "Планировщик"]
         for tab_name in tab_names:
             frame = ttk.Frame(GUI_ELEMENTS["notebook"], padding="5 5 5 5")
             GUI_ELEMENTS["notebook"].add(frame, text=tab_name)

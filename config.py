@@ -8,7 +8,7 @@ settings_path = 'settings'
 log_path = 'log'
 
 # Каталог изображений
-images_path = 'info_image\\'
+images_path = '.'
 
 # Файл настройки анимации
 animation_txt = 'animation.txt'

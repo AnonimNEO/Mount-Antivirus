@@ -34,7 +34,7 @@ from RS import random_string
 from config import *
 
 #Глобальная переменная версии
-file_manager_version = "4.8.2 Beta"
+file_manager_version = "4.8.3 Beta"
 
 def FM(run_in_recovery):
     try:
@@ -368,10 +368,12 @@ def FM(run_in_recovery):
                     #Если пути всё еще нет (первый запуск), запрашиваем его
                     if run_in_recovery:
                         default_path = get_current_disc(run_in_recovery)
+                        
+                        #Если функция вернула кортеж, берем первый элемент
+                        if isinstance(default_path, tuple) and len(default_path) > 0:
+                            default_path = default_path[0]
                     else:
                         default_path = "C:\\"
-                    if not os.path.isdir(default_path):
-                        default_path = drives[0] #Берем первый диск
 
                     chosen_path = simpledialog.askstring(random_string(),f"Введите путь\nДоступные диски: {get_available_drives()}", initialvalue=default_path)
                     if chosen_path:

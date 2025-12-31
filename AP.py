@@ -29,7 +29,7 @@ about_program_version = "0.2.19 Beta"
 
 image_references = {}
 
-def AP(autorun_master_version, clear_cache_version, exit_version, edit_criticality_version, file_manager_version, load_protection_version, unlocker_version, on_board_pc_version, other_komponents_version, process_manager_version, restart_version, random_string_version, run_version, scarecrow_protection_version, settings_and_update_version, trey_version, unlock_all_version):
+def AP(autorun_master_version, clear_cache_version, exit_version, edit_criticality_version, file_manager_version, knot_version, load_protection_version, unlocker_version, on_board_pc_version, other_komponents_version, process_manager_version, restart_version, random_string_version, run_version, scarecrow_protection_version, settings_and_update_version, trey_version, unlock_all_version):
     try:
         #Загрузка изображений
         def load_images(master):
@@ -39,7 +39,7 @@ def AP(autorun_master_version, clear_cache_version, exit_version, edit_criticali
             #Проверяем существование каталога
             if not os.path.isdir(images_path):
                 return image_labels_container
-            
+
             #Получаем список файлов в каталоге
             try:
                 image_files = [f for f in os.listdir(images_path) if f.lower().endswith((".png", ".jpg", ".jpeg", ".gif"))]
@@ -84,7 +84,7 @@ def AP(autorun_master_version, clear_cache_version, exit_version, edit_criticali
             about_program_text = (
                 f"Версии Компонентов:\n"
                 f"Трей: {trey_version}\n"
-                f"Шифрование: ШифрЦезара 2.2\n"
+                f'Шифрование "Узел": {knot_version}\n'
                 f"Смена Критичности: {edit_criticality_version}\n"
                 f"Защита Нагрузки: {load_protection_version}\n"
                 f"Мастер Автозагрузки: {autorun_master_version}\n"
@@ -154,7 +154,7 @@ def AP(autorun_master_version, clear_cache_version, exit_version, edit_criticali
         about_window.configure(bg="black")
         
         #Текст
-        label_text = f"Антивирус Монтировка!\nВытащит любой гвоздь из крышки гроба вашего ПК!\n(как минимум попытается, а если не смог - поставь Linux)\nCreated by NEO Organization\nPowered by Departament K\nCoded by @AnonimNEO, Всего строчек кода : {all_line}\nПрограмисты/Задумщики/Художники/Тестировщики : @AnonimNEO\nЛицензия: GPL v2.0 Copyleft 🄯 2024 - 2025\n"
+        label_text = f"Антивирус Монтировка!\nВытащит любой гвоздь из крышки гроба вашего ПК!\n(как минимум попытается, а если не смог - поставь Linux)\nCreated by NEO Organization\nPowered by Departament K\nCoded by @AnonimNEO, Всего строчек кода : {all_line}\nПрограмисты/Задумщики/Художники/Тестировщики : @AnonimNEO\nЛицензия: GPL v3.0 Copyleft 🄯 2024 - 2026\n"
         label = tk.Label(about_window, text=label_text, bg="black", fg="white", font=("ComicSans", 16))
         label.pack(pady=20)
 
@@ -168,7 +168,7 @@ def AP(autorun_master_version, clear_cache_version, exit_version, edit_criticali
         donationalerts_link.pack(pady=10)
         donationalerts_link.bind("<Button-1>", donate_window)
 
-        gpl_link = tk.Label(about_window, text="Лицензия GPL v2.0", bg="red", fg="white", cursor="hand2", font=("ComicSans", 16))
+        gpl_link = tk.Label(about_window, text="Лицензия GPL v3.0", bg="red", fg="white", cursor="hand2", font=("ComicSans", 16))
         gpl_link.pack(pady=10)
         gpl_link.bind("<Button-1>", open_gpl_licenses)
 

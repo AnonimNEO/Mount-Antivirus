@@ -20,7 +20,8 @@ import ast
 import os
 
 from RS import random_string
-from CC22 import CC22
+from OF import Psutil
+from K import K
 from config import *
 
 global load_protection_version, debug_mode, time_sleep_to_close_question, time_sleep_to_close_question2
@@ -49,7 +50,7 @@ def LP(run_in_recovery, debug_mode=False):
         try:
             with open(file, "r") as data:
                 data_file = data.read()
-            data_file_decrypt = CC22(str(data_file), code, True)
+            data_file_decrypt = K(str(data_file), code, True)
             data_list = ast.literal_eval(data_file_decrypt)
         except FileNotFoundError:
             data_list = []
@@ -72,7 +73,7 @@ def LP(run_in_recovery, debug_mode=False):
         try:
             with open(file, "r") as data:
                 data_file = data.read()
-            cript_process_name = CC22(process_name, code)
+            cript_process_name = K(process_name, code)
             if data_file:
                 if data_file.endswith("]\n"):
                     data_file = data_file[:-2]

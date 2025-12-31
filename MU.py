@@ -13,8 +13,6 @@ from tkinter import ttk, Menu
 import tkinter as tk
 #Логирование Ошибок
 from loguru import logger
-#Работа с файлами
-import os
 
 #Импорт Компонентов
 from R import R
@@ -26,48 +24,21 @@ from PM import PM
 from LP import LP
 from Run import Run
 from ARM import ARM
-from config import *
-from CC22 import CC22
-from E import ask_exit
 from OF import open_with
 from RS import random_string
 
+
 global settings_path, animation_txt, animation_default, unlocker_version
-unlocker_version = "1.7.17 Beta"
+unlocker_version = "1.7.19 Beta"
 
 @logger.catch
 def MU(run_in_recovery):
     try:
-        def animation_read():
-            try:
-                global animation
-                if not os.path.exists(settings_path) or not os.path.isfile(f"{settings_path}\\{animation_txt}"):
-                    os.makedirs(settings_path)
-                    with open(f"{settings_path}\\{animation_txt}", "w") as file:
-                        file.write(CC22(animation_default, clyth, False))
-                with open(f"{settings_path}\\{animation_txt}", "r") as file:
-                    animation = file.read()
-                    animation = CC22(animation, clyth, True)
-                if animation == "False":
-                    print("MU - Первая проверка переменной animation пройдена")
-                elif animation == "True":
-                    print("MU - Вторая проверка переменной animation пройдена")
-                else:
-                    print("MU - Ни одна проверка переменной animation не пройдена")
-                    animation = False
-                print(animation)
-            except FileNotFoundError:
-                animation = animation_default
-                print(f"MU - Файл {animation_txt} не найден, Значение - {animation}")
-
-        animation_read()
-
         mount_unlocker = tk.Tk()
         mount_unlocker.focus_force()
         style = ttk.Style()
         style.theme_use("clam")
-        if animation == "False":
-            mount_unlocker.geometry("370x320")
+        mount_unlocker.geometry("370x320")
 
         mount_unlocker.title(random_string())
         header_text = "Монтировка Анлокер"
@@ -77,40 +48,23 @@ def MU(run_in_recovery):
         #Каждая буква будет иметь свой цвет из радуги
         rainbow_colors = ["red", "orange", "yellow2", "green", "lightgreen", "blue", "skyblue", "violet"]
 
-        def change_color():
-            color_index = 0  #Индекс текущего цвета
-            color = rainbow_colors[color_index]
-            color_index = (color_index + 1) % len(rainbow_colors)
-            header_label.config(fg=color)
-            mount_unlocker.after(500, change_color)
-
         def update_text_color(text, index, label):
             label.config(text=text[:index], fg=rainbow_colors[index % len(rainbow_colors)])
             mount_unlocker.after(150, update_text_color, text, index+1, label)
 
-        if animation == "True":
-            change_color()
-            update_text_color(header_text, 0, header_label)
+        update_text_color(header_text, 0, header_label)
 
         process_manager_button = tk.Button(mount_unlocker, text="Менеджер Процессов", command=lambda:PM(run_in_recovery), font=("Arial", 24))
         process_manager_button.pack()
-        if animation == "True":
-            update_text_color(process_manager_button.cget("text"), 0, process_manager_button)
 
         file_manager_button = tk.Button(mount_unlocker, text="Файловый Менеджер", command=lambda:FM(run_in_recovery), font=("Arial", 24))
         file_manager_button.pack()
-        if animation == "True":
-            update_text_color(file_manager_button.cget("text"), 0, file_manager_button)
 
         autoload_button = tk.Button(mount_unlocker, text="Мастер Автозагрузки", command=lambda:ARM(run_in_recovery), font=("Arial", 24))
         autoload_button.pack()
-        if animation == "True":
-            update_text_color(autoload_button.cget("text"), 0, autoload_button)
 
         unlock_button = tk.Button(mount_unlocker, text="Разблокировка всего", command=lambda:UA(run_in_recovery), font=("Arial", 24))
         unlock_button.pack()
-        if animation == "True":
-            update_text_color(unlock_button.cget("text"), 0, unlock_button)
 
         copyright_label = tk.Label(mount_unlocker, text=f"Mount Unlocker {unlocker_version}", anchor="w")
         copyright_label.pack(side="bottom", anchor="w", padx=10, pady=10)

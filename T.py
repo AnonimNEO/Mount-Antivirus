@@ -17,18 +17,11 @@ from elevate import elevate
 #Движок иконки в трее
 from pystray import MenuItem, Menu
 import pystray
-#Работа с потоками
-#from threading import Thread
 import threading
 #Работа со временим
 import time
 #Работа с файлами и ОС
 import os
-
-#import ctypes
-#ctypes import windll
-#Устанавливаем DPI Awareness ПЕРЕД созданием любых графических объектов
-#windll.shcore.SetProcessDpiAwareness(1)
 
 #Глобализируем версии компонентов
 global autorun_master_version, clear_cache_version, exit_version, file_manager_version, load_protection_version, unlocker_version, on_board_pc_version, other_komponents_version, restart_version, random_string_version, run_version, scarecrow_protection_verison
@@ -41,6 +34,7 @@ from config import *
 from E import ask_exit, exit_version
 from EC import edit_criticality_version
 from FM import FM, file_manager_version
+from K import knot_version
 from LP import LP, load_protection_version
 from MU import MU, unlocker_version
 from OBPC import OBPC, on_board_pc_version
@@ -58,7 +52,7 @@ elevate()
 #Глобальные Переменные
 global T_log_txt, start_interface
 font_trey = "arial.ttf"
-trey_version = "2.0.2 Beta"
+trey_version = "2.0.4 Beta"
 
 if not os.path.exists(log_path):
     os.makedirs(log_path)
@@ -66,20 +60,20 @@ logger.add(f"{log_path}\\{T_log_txt}", format="{time} {level} {message}", rotati
 
 def check_is_recovery():
     #Проверка через реестр (характерно для среды установки/восстановления)
-    try:
-        import winreg
-        # В WinPE этот ключ часто указывает на среду предустановки
-        reg_key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"SYSTEM\Setup", 0, winreg.KEY_READ)
-        setup_type, _ = winreg.QueryValueEx(reg_key, "SystemSetupInProgress")
-        winreg.CloseKey(reg_key)
-        if setup_type == 1:
-            return True
-    except Exception:
-        pass
+    #try:
+    #    import winreg
+    #    # В WinPE этот ключ часто указывает на среду предустановки
+    #    reg_key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"SYSTEM\Setup", 0, winreg.KEY_READ)
+    #    setup_type, _ = winreg.QueryValueEx(reg_key, "SystemSetupInProgress")
+    #    winreg.CloseKey(reg_key)
+    #    if setup_type == 1:
+    #        return True
+    #except Exception:
+    #    pass
 
     #Проверка по наличию критических файлов
-    #if os.path.exists("X:\\Windows\\"):
-    #    return True
+    if os.path.exists("X:\\Windows\\"):
+        return True
 
     return False
 
@@ -105,30 +99,8 @@ try:
 except Exception as e:
     logger.error(f"T - Критическая ошибка: {e}")
 
-#def set_dpi_awareness():
-#    if run_in_recovery:
-#        return
-#    try:
-#        #Пытаемся вызвать более современную функцию (Windows 8.1+)
-#        ctypes.windll.shcore.SetProcessDpiAwareness(1)
-#    except Exception:
-#        try:
-#            #Откат для старых систем (Windows Vista/7)
-#            ctypes.windll.user32.SetProcessDPIAware()
-#        except Exception as e:
-#            logger.debug(f"T - Не удалось установить DPI Awareness: {e}")
-#
-#set_dpi_awareness()
-
 #Основная программа
 try:
-    #if not run_in_recovery:
-    #    #ИСПРАВЛЕНИЕ: Активируем DPI-Awareness для Windows
-    #    try:
-    #        ctypes.windll.shcore.SetProcessDpiAwareness(1) # Убирает ошибку модуля в pystray
-    #    except Exception as e:
-    #        logger.warning(f"T - Не удалось установить DPI Awareness: {e}")
-
     if not run_in_recovery:
         try:
             #Создание Иконки
@@ -191,7 +163,7 @@ try:
                 MenuItem("Менеджер Процессов", lambda:PM(run_in_recovery)),
                 MenuItem("Разблокировка Всего", lambda:UA(run_in_recovery)),
                 MenuItem("Запустить От Имени Админа", Run),
-                MenuItem("О Программе", lambda:AP(autorun_master_version, clear_cache_version, exit_version, edit_criticality_version, file_manager_version, load_protection_version, unlocker_version, on_board_pc_version, other_komponents_version, process_manager_version, restart_version, random_string_version, run_version, scarecrow_protection_version, settings_and_update_version, trey_version, unlock_all_version)),
+                MenuItem("О Программе", lambda:AP(autorun_master_version, clear_cache_version, exit_version, edit_criticality_version, file_manager_version, knot_version, load_protection_version, unlocker_version, on_board_pc_version, other_komponents_version, process_manager_version, restart_version, random_string_version, run_version, scarecrow_protection_version, settings_and_update_version, trey_version, unlock_all_version)),
                 MenuItem("Настройки", SAU),
                 MenuItem("Выход", ask_exit)
             )
@@ -207,13 +179,13 @@ try:
                 start_icon()
 
             if start_obpc:
-                #Запускаем Голосовое Управление (OBPC) в отдельном потоке.
+                #Запускаем Голосовое Управление в отдельном потоке.
                 thread_obpc = threading.Thread(target=lambda:OBPC(run_in_recovery))
                 thread_obpc.daemon = True
                 thread_obpc.start()
 
             if start_lp:
-                #Запускаем LoadProtection (LP) в отдельном потоке.
+                #Запускаем LoadProtection в отдельном потоке.
                 thread_lp = threading.Thread(target=lambda:LP(run_in_recovery))
                 thread_lp.daemon = True
                 thread_lp.start()
@@ -224,17 +196,15 @@ try:
             while True:
                 time.sleep(1)
         except Exception as e:
-            run_in_recovery = True
-            logger.warning("T - Ошибка при запуске иконки, запуск в режиме рекавери...")
+            logger.warning(f"T - Ошибка при запуске иконки\n{e}")
+            MU(run_in_recovery)
 
     if run_in_recovery:
         logger.info("T - Запуск в режиме рекавери...")
         MU(run_in_recovery)
 
 except Exception as e:
-    run_in_recovery = True
     logger.critical(f"В Компоненте Trey произошла неизвестная ошибка!\n{e}")
-    logger.info("T - Запуск в режиме рекавери...")
     MU(run_in_recovery)
 finally:
     if run_in_recovery:
