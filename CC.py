@@ -7,23 +7,28 @@
 #Или в файле COPYING.txt в архиве с установщиком
 #Copyleft 🄯 NEO Organization, Departament K 2024 - 2025
 #Coded by @AnonimNEO (Telegram)
-
+#Обучение
+from tkinter import messagebox
 #Логирование Ошибок
 from loguru import logger
-from config import *
 import datetime
+#Работа с ОС и файлами
 import getpass
 import shutil
 import os
 
 from OF import get_current_disc
+from RS import random_string
+from config import *
 
 global log_path, clear_temp_log
-clear_cache_version = "0.6.9 Beta"
+clear_cache_version = "0.6.10 Beta"
 
 @logger.catch
-def CC(run_in_recovery):
+def CC(run_in_recovery, first_run):
     try:
+        if first_run:
+            messagebox.showinfo(random_string(), "Данный Компонент не имеет графического интерфейса, а просто удаляет все файлы в каталоге %Temp%\nА после сообщает где был сохранён лог-файл с результатами очистки.")
         logger.info("CC - Запуск Очистки...")
         #Получаем имя пользователя
         username = getpass.getuser()
@@ -64,7 +69,9 @@ def CC(run_in_recovery):
             for file in files_deleted:
                 log_file.write(f"{file}\n")
 
-        logger.info(f"Лог файл был создан по пути - {log_path}\\{log_filename}")
+        cc_log_text = f"Лог файл был создан по пути - {log_path}\\{log_filename}"
+        logger.info(cc_log_text)
+        messagebox.showinfo(random_string(), cc_log_text)
 
     except Exception as e:
         logger.critical(f"В Компоненте ClearCache произошла неизвестная ошибка!\n{e}")

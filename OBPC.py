@@ -11,7 +11,6 @@
 import speech_recognition as sr
 from tkinter import messagebox
 from loguru import logger
-import pyttsx3
 import time
 
 from RS import random_string
@@ -20,33 +19,33 @@ from SP import SP
 from UA import UA
 from E import ask_exit
 from ARM import ARM
-from MU import MU
+#from MU import MU
 from CC import CC
 from FM import FM
 from PM import PM
 from R import R
 
-on_board_pc_version = "0.3.12 Beta"
+on_board_pc_version = "0.3.14 Beta"
 
 #Список Команд
-def execute_command(text, run_in_recovery):
+def execute_command(text, run_in_recovery, first_run):
     if "список всех команд" in text or "помощь" in text or "команды" in text:
         messagebox.showinfo(random_string(), "Доступные Команды:\n1)файловый менеджер - проводник - диспетчер файлов\n2)мастер автозагрузки - мастер автозапуска - автозапуск - автозапуска - управление автозапуском - управление автозагрузкой\n3)менеджер процессов - мастре процессов - процессы - процесы - менеджер процесов - мастер процесов - запусти менеджер процессов - запусти менеджер процесов - запусти мастер процессов - запусти мастер процесов\n4)очистка кэша - очистить кэш - кэш - удалить кэш - запусти удаление кэша - запустить удаление кэша - запусти очистку кэша - запусти удаление кэша\n5)перезапусти пк - перезапусти компьютер - перезапусти ноут - перезапусти ноутбук - перезагрузи пк - перезагрузи компьютер - перезагрузи комп - перезапусти комп - перезагрузи ноут - перезагрузи ноутбук - перезапуск - перезагрузка\n6)монтировка анлокер - анлокер - окно - окошко - открой монтировка анлокер - запусти монтировка анлокер - открой анлокер - запусти анлокер\n7)лоад протект - лоад протектион - лп - запусти лоад протект - запусти лоад протектион - запусти лп - открой лоад протект - открой лоад протектион - открой лп\n8)выйти - выход - завершить работу - остановить работу - закрыться")
 
     elif "файловый менеджер" in text or "проводник" in text or "диспетчер файлов" in text:
         logger.info("OBPC - Запуск Компонента FileManager...")
-        FM(run_in_recovery)
+        FM(run_in_recovery, first_run)
 
     elif "мастер автозагрузки" in text or "мастер автозапуска" in text or "автозапуск" in text or "автозапуска" in text or "управление автозапуском" in text or "управление автозагрузкой" in text:
         logger.info("OBPC - Запуск Компонента AutoRunMaster...")
-        ARM(run_in_recovery)
+        ARM(run_in_recovery, first_run)
 
     elif "менеджер процессов" in text or "мастре процессов" in text or "процессы" in text or "процесы" in text or "менеджер процесов" in text or "мастер процесов" in text or "запусти менеджер процессов" in text or "запусти менеджер процесов" in text or "запусти мастер процессов" in text or "запусти мастер процесов" in text:
         logger.info("OBPC - Запуск Компонента ProcessManager...")
-        PM(run_in_recovery)
+        PM(run_in_recovery, first_run)
 
     elif "разблокировка" in text or "разблокировка всего" in text or "разблокируй всё" in text or "разблокируй" in text or "разблочь" in text or "разблоч" in text:
-        UA(run_in_recovery)
+        UA(run_in_recovery, first_run)
 
     elif "очистка кэша" in text or "очистить кэш" in text or "кэш" in text or "удалить кэш" in text or "запусти удаление кэша" in text or "запустить удаление кэша" in text or "запусти очистку кэша" in text or "запусти удаление кэша" in text:
         logger.info("OBPC - Запуск очистки кэша...")
@@ -56,17 +55,17 @@ def execute_command(text, run_in_recovery):
         logger.info("OBPC - Перезапуск ПК...")
         R()
 
-    elif "монтировка анлокер" in text or "анлокер" in text or "окно" in text or "окошко" in text or "открой монтировка анлокер" in text or "запусти монтировка анлокер" in text or "открой анлокер" in text or "запусти анлокер" in text:
-        logger.info("OBPC - Запуск Компонента MountUnlocker...")
-        MU(run_in_recovery)
+    #elif "монтировка анлокер" in text or "анлокер" in text or "окно" in text or "окошко" in text or "открой монтировка анлокер" in text or "запусти монтировка анлокер" in text or "открой анлокер" in text or "запусти анлокер" in text:
+        #logger.info("OBPC - Запуск Компонента MountUnlocker...")
+        #MU(run_in_recovery)
 
     elif "лоад протект" in text or "лоад протектион" in text or "лп" in text or "запусти лоад протект" in text or "запусти лоад протектион" in text or "запусти лп" in text or "открой лоад протект" in text or "открой лоад протектион" in text or "открой лп" in text:
         logger.info("OBPC - Запуск Компонента LoadProtection...")
-        LP(run_in_recovery)
+        LP(run_in_recovery, first_run)
 
     elif "пугало" in text or "запусти пугало" in text or "открой пугало" in text:
         logger.info("OBPC - Запуск Компонента ScarecrowProtection...")
-        SP(run_in_recovery)
+        SP(run_in_recovery, first_run)
 
     elif "выйти" in text or "выход" in text or "завершить работу" in text or "остановить работу" in text or "закрыться" in text:
         logger.info("OBPC - Выход из программы...")
@@ -74,9 +73,12 @@ def execute_command(text, run_in_recovery):
 
 
 
-def OBPC(run_in_recovery):
+def OBPC(run_in_recovery, first_run):
+    if first_run:
+        messagebox.showinfo(random_string(), "Добро пожаловать в Компонент Голосового Управления.\nДанный Компонент не имеет графического интерфейса, он работает в фоне. Вы можете сказать одну из фраз активации:\nбортовой компьютер, бортовой пк, бортовой комп, монтировка, антивирус, пк, комп, компьютер\nА затем словосочетание:\nсписок всех команд, команды, помощь\n\nчтобы посмотреть доступные команды.")
+
     recognizer = sr.Recognizer()
-    engine = pyttsx3.init()
+    #engine = pyttsx3.init()
 
     #Список ключевых слов для активации
     activation_words = ["бортовой компьютер", "бортовой пк", "бортовой комп", "монтировка", "антивирус", "пк", "комп", "компьютер"]
@@ -86,7 +88,7 @@ def OBPC(run_in_recovery):
             with sr.Microphone() as source:
                 #Адаптация под шум (помогает избежать ошибок распознавания)
                 recognizer.adjust_for_ambient_noise(source, duration=0.5)
-                
+
                 print("OBPC - Ожидаю одну из фраз активации...")
                 audio = recognizer.listen(source)
                 
@@ -102,7 +104,7 @@ def OBPC(run_in_recovery):
                     text = recognizer.recognize_google(audio_cmd, language="ru-RU").lower()
                     
                     logger.info(f"OBPC - Распознана команда: {text}")
-                    execute_command(text, run_in_recovery)
+                    execute_command(text, run_in_recovery, first_run)
 
         except sr.UnknownValueError:
             #Ничего не сказано

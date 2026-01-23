@@ -17,14 +17,13 @@ import subprocess
 #Работа с реестром
 import winreg
 #Работа с файлами и ОС
-#Условный импорт или использование заглушки
 import os
 
 from RS import random_string
 from config import *
 
 global load_bush
-other_komponents_version = "0.5.2 Beta"
+other_komponents_version = "0.5.4 Beta"
 
 #Глобальные имена загруженных кустов
 loaded_hive_names = {
@@ -33,16 +32,12 @@ loaded_hive_names = {
     "USER": "Offline_USER"
 }
 
-
-
 #Глобальные имена для загрузки кустов
 HIVE_MAP = {
     "SYSTEM": "Offline_SYSTEM",
     "SOFTWARE": "Offline_SOFTWARE",
     "USER": "Offline_USER"
 }
-
-
 
 #Список для отслеживания загруженных кустов
 active_loaded_hives = []
@@ -76,6 +71,50 @@ class Psutil:
         if name in ["sensors_temperatures", "net_io_counters", "process_iter"]:
             return lambda *args, **kwargs: None
         return lambda *args, **kwargs: False
+
+
+
+@logger.catch()
+def check_first_run(path="C:\\ProgramData\\first_run", delete=False):
+    if delete:
+        if os.path.exists(path):
+            try:
+                os.rmdir(path)
+                logger.info("OF/check_first_run - Режим обучения будет включен при следующем запуске.")
+            except Exception as e:
+                logger.error(f"OF/check_first_run - Ошибка при включения режима обучения:\n{e}")
+        return False
+
+    if not os.path.exists(path):
+        try:
+            os.makedirs(path, exist_ok=True)
+            return True
+        except Exception as e:
+            logger.error(f"OF/check_first_run - Не удалось создать каталог обучения:\n{e}")
+            return False
+    else:
+        return False
+
+
+
+
+def run_lp(run_in_recovery, first_run):
+    if not start_lp:
+        thread_lp = threading.Thread(target=lambda:LP(run_in_recovery, first_run))
+        thread_lp.daemon = True
+        thread_lp.start()
+    else:
+        messagebox.showwarning(random_string(), "Компонент Защита Нагрузки уже запущен.")
+
+
+
+def run_obpc(run_in_recovery, first_run):
+    if not start_obpc:
+        thread_obpc = threading.Thread(target=lambda:OBPC(run_in_recovery, first_run))
+        thread_obpc.daemon = True
+        thread_obpc.start()
+    else:
+        messagebox.showwarning(random_string(), "Компонент Голосовое Управление уже запущен.")
 
 
 
@@ -127,6 +166,7 @@ def get_current_disc(run_in_recovery=False):
                     return drive, True
             return "X:\\", False
 
+        import psutil
         #Для обычной среды
         partitions = psutil.disk_partitions()
         for p in partitions:
@@ -134,8 +174,9 @@ def get_current_disc(run_in_recovery=False):
                 return p.mountpoint, True
         return "C:\\", False
     except Exception as e:
-        logger.critical(f"OF\get_current_disc - Неизвестаня ошибка:\n{e}")
+        logger.critical(f"OF\\get_current_disc - Неизвестная ошибка:\n{e}")
         return "X:\\", False
+
 
 
 #Загрузка кустов реестра

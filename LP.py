@@ -10,7 +10,7 @@
 
 #Интерфейс
 import tkinter as tk
-
+from tkinter import messagebox
 #Логирование Ошибок
 from loguru import logger
 #Работа с временим
@@ -21,14 +21,16 @@ import os
 
 from RS import random_string
 from OF import Psutil
-from K import K
+from CC22 import CC22
 from config import *
 
 global load_protection_version, debug_mode, time_sleep_to_close_question, time_sleep_to_close_question2
-load_protection_version = "2.2.12 Alpha"
+load_protection_version = "2.2.14 Alpha"
 debug_mode = True
 
-def LP(run_in_recovery, debug_mode=False):
+def LP(run_in_recovery, first_run, debug_mode=False):
+    if first_run:
+        messagebox.showinfo(random_string(), "Данный Компонент не имеет графического интерфейса.\nОн работает в фоне и анализирует процессы согласно указанным параметрам, при обнаружении угроз вы получите уведомление об этом.")
     if not run_in_recovery:
         import psutil
     else:
@@ -50,7 +52,7 @@ def LP(run_in_recovery, debug_mode=False):
         try:
             with open(file, "r") as data:
                 data_file = data.read()
-            data_file_decrypt = K(str(data_file), code, True)
+            data_file_decrypt = CC22(str(data_file), code, True)
             data_list = ast.literal_eval(data_file_decrypt)
         except FileNotFoundError:
             data_list = []
@@ -73,7 +75,7 @@ def LP(run_in_recovery, debug_mode=False):
         try:
             with open(file, "r") as data:
                 data_file = data.read()
-            cript_process_name = K(process_name, code)
+            cript_process_name = CC22(process_name, code)
             if data_file:
                 if data_file.endswith("]\n"):
                     data_file = data_file[:-2]

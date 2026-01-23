@@ -25,11 +25,11 @@ from config import *
 from RS import random_string
 
 global about_program_version
-about_program_version = "0.2.19 Beta"
+about_program_version = "0.2.21 Beta"
 
 image_references = {}
 
-def AP(autorun_master_version, clear_cache_version, exit_version, edit_criticality_version, file_manager_version, knot_version, load_protection_version, unlocker_version, on_board_pc_version, other_komponents_version, process_manager_version, restart_version, random_string_version, run_version, scarecrow_protection_version, settings_and_update_version, trey_version, unlock_all_version):
+def AP(autorun_master_version, clear_cache_version, exit_version, edit_criticality_version, file_manager_version, load_protection_version, unlocker_version, on_board_pc_version, other_komponents_version, process_manager_version, restart_version, random_string_version, run_version, scarecrow_protection_version, settings_and_update_version, trey_version, unlock_all_version, users_manager_version):
     try:
         #Загрузка изображений
         def load_images(master):
@@ -84,7 +84,7 @@ def AP(autorun_master_version, clear_cache_version, exit_version, edit_criticali
             about_program_text = (
                 f"Версии Компонентов:\n"
                 f"Трей: {trey_version}\n"
-                f'Шифрование "Узел": {knot_version}\n'
+                f'Шифрование "Шифр Цезаря": 2.2\n'
                 f"Смена Критичности: {edit_criticality_version}\n"
                 f"Защита Нагрузки: {load_protection_version}\n"
                 f"Мастер Автозагрузки: {autorun_master_version}\n"
@@ -93,6 +93,7 @@ def AP(autorun_master_version, clear_cache_version, exit_version, edit_criticali
                 f"Раблокировка всего: {unlock_all_version}\n"
                 f"Пугало: {scarecrow_protection_version}\n"
                 f"Очистка Кэша: {clear_cache_version}\n"
+                f"Менеджер Пользователей: {users_manager_version}\n"
                 f"Анлокер меню: {unlocker_version}\n"
                 f"Перезапуск ПК: {restart_version}\n"
                 f"Запуск от имени администратора: {run_version}\n"

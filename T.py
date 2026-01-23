@@ -7,7 +7,8 @@
 #Или в файле COPYING.txt в архиве с установщиком
 #Copyleft 🄯 NEO Organization, Departament K 2024 - 2025
 #Coded by @AnonimNEO (Telegram)
-
+#Обучение
+from tkinter import messagebox
 #Рисование иконки в трее и вставка картинок
 from PIL import Image, ImageDraw, ImageFont
 #Логирование Ошибок
@@ -17,6 +18,7 @@ from elevate import elevate
 #Движок иконки в трее
 from pystray import MenuItem, Menu
 import pystray
+#Работа с потоками
 import threading
 #Работа со временим
 import time
@@ -34,25 +36,27 @@ from config import *
 from E import ask_exit, exit_version
 from EC import edit_criticality_version
 from FM import FM, file_manager_version
-from K import knot_version
+from FR import FR, file_replacer_version
+#from K import knot_version
 from LP import LP, load_protection_version
 from MU import MU, unlocker_version
 from OBPC import OBPC, on_board_pc_version
-from OF import open_with, get_current_disc, load_bush, unload_bush, other_komponents_version
+from OF import check_first_run, run_lp, run_obpc, open_with, get_current_disc, load_bush, unload_bush, other_komponents_version
 from PM import PM, process_manager_version
 from R import R, restart_version
-from RS import random_string_version
+from RS import random_string, random_string_version
 from Run import Run, run_version
 from SAU import SAU, settings_and_update_version
 from SP import SP, scarecrow_protection_version
 from UA import UA, unlock_all_version
+from UM import UM, users_manager_version
 
 elevate()
 
 #Глобальные Переменные
 global T_log_txt, start_interface
 font_trey = "arial.ttf"
-trey_version = "2.0.4 Beta"
+trey_version = "2.0.8 Beta"
 
 if not os.path.exists(log_path):
     os.makedirs(log_path)
@@ -99,14 +103,21 @@ try:
 except Exception as e:
     logger.error(f"T - Критическая ошибка: {e}")
 
+global first_run
+first_run = check_first_run()
+if first_run:
+    messagebox.showinfo(random_string(), 'Похоже, что вы первый раз запустили программу, включен режим обучения (в компонентах включены подсказки).\nОн будет выключен при следующим старте программы\nЧтоб потом включить его снова найдите пункт "Включить режим обучения".')
+
+
+
 #Основная программа
 try:
     if not run_in_recovery:
         try:
             #Создание Иконки
             def create_image(width, height):
-                image = Image.new("RGB", (width, height), (255, 0, 0))
-                square = ImageDraw.Draw(image)
+                icon_trey = Image.new("RGB", (width, height), (255, 0, 0))
+                square = ImageDraw.Draw(icon_trey)
                 square.rectangle(
                     (width // 2 - 10, height // 2 - 10, width // 2 + 10, height // 2 + 10),
                     fill=(0, 0, 255)
@@ -120,7 +131,7 @@ try:
                     try:
                         font = ImageFont.truetype(path, 24)
                         break
-                    except Exception:
+                    except:
                         continue
 
                 if font is None:
@@ -133,7 +144,7 @@ try:
                 text_height = text_bbox[3] - text_bbox[1]
                 text_position = (width // 2 - text_width // 2, height // 2 - text_height // 2)
                 square.text(text_position, text, fill=(255, 0, 0), font=font)
-                return image
+                return icon_trey
 
             def start_icon():
                 if run_in_recovery:
@@ -146,25 +157,28 @@ try:
 
             #Создаем выпадающий список с функциями Анлокера
             unlocker_menu = Menu(
-                MenuItem("Файловый Менеджер", lambda:FM(run_in_recovery)),
-                MenuItem("Мастер Автозагрузки", lambda:ARM(run_in_recovery)),
-                MenuItem("Scarecrow Protection", lambda:SP(run_in_recovery)),
-                MenuItem("Запустить Очистку Temp", lambda:CC(run_in_recovery)),
-                MenuItem("Открыть с Помощью", open_with),
+                MenuItem("Файловый Менеджер", lambda:FM(run_in_recovery, first_run)),
+                MenuItem("Мастер Автозагрузки", lambda:ARM(run_in_recovery, first_run)),
+                MenuItem("Замена Setch, Utilman", FR),
+                MenuItem("Менеджер Пользователей", UM),
+                MenuItem("Scarecrow Protection", lambda:SP(run_in_recovery, first_run)),
+                MenuItem("Запустить Очистку Temp", lambda:CC(run_in_recovery, first_run)),
+                MenuItem("Открыть с Помощью", lambda: open_with(first_run)),
+                MenuItem("Включить режим обучения", lambda: check_first_run(delete=True)),
                 MenuItem("Перезапустить ПК", R)
             )
 
             #Меню По ПКМ
             image = create_image(20, 20)
             menu = Menu(
-                MenuItem("Открыть Монтировка Анлокер", lambda:MU(run_in_recovery)),
+                MenuItem("Открыть Монтировка Анлокер", lambda:MU(run_in_recovery, first_run)),
                 MenuItem("Утилиты", unlocker_menu),
-                MenuItem("Запустить Load Protection", lambda:LP(run_in_recovery)),
-                MenuItem("Менеджер Процессов", lambda:PM(run_in_recovery)),
-                MenuItem("Разблокировка Всего", lambda:UA(run_in_recovery)),
-                MenuItem("Запустить От Имени Админа", Run),
-                MenuItem("О Программе", lambda:AP(autorun_master_version, clear_cache_version, exit_version, edit_criticality_version, file_manager_version, knot_version, load_protection_version, unlocker_version, on_board_pc_version, other_komponents_version, process_manager_version, restart_version, random_string_version, run_version, scarecrow_protection_version, settings_and_update_version, trey_version, unlock_all_version)),
-                MenuItem("Настройки", SAU),
+                MenuItem("Запустить Load Protection", lambda: run_lp(run_in_recovery, first_run)),
+                MenuItem("Менеджер Процессов", lambda:PM(run_in_recovery, first_run)),
+                MenuItem("Разблокировка Всего", lambda:UA(run_in_recovery, first_run)),
+                MenuItem("Запустить От Имени Админа", lambda:Run(first_run)),
+                MenuItem("О Программе", lambda:AP(autorun_master_version, clear_cache_version, exit_version, edit_criticality_version, file_manager_version, load_protection_version, unlocker_version, on_board_pc_version, other_komponents_version, process_manager_version, restart_version, random_string_version, run_version, scarecrow_protection_version, settings_and_update_version, trey_version, unlock_all_version, users_manager_version)),
+                MenuItem("Настройки", lambda: SAU(first_run)),
                 MenuItem("Выход", ask_exit)
             )
 
@@ -180,32 +194,32 @@ try:
 
             if start_obpc:
                 #Запускаем Голосовое Управление в отдельном потоке.
-                thread_obpc = threading.Thread(target=lambda:OBPC(run_in_recovery))
+                thread_obpc = threading.Thread(target=lambda:OBPC(run_in_recovery, first_run))
                 thread_obpc.daemon = True
                 thread_obpc.start()
 
             if start_lp:
                 #Запускаем LoadProtection в отдельном потоке.
-                thread_lp = threading.Thread(target=lambda:LP(run_in_recovery))
+                thread_lp = threading.Thread(target=lambda:LP(run_in_recovery, first_run))
                 thread_lp.daemon = True
                 thread_lp.start()
 
             if start_interface == "window" or start_interface == "only-windows":
-                MU(run_in_recovery)
+                MU(run_in_recovery, first_run)
 
             while True:
                 time.sleep(1)
         except Exception as e:
             logger.warning(f"T - Ошибка при запуске иконки\n{e}")
-            MU(run_in_recovery)
+            MU(run_in_recovery, first_run)
 
     if run_in_recovery:
         logger.info("T - Запуск в режиме рекавери...")
-        MU(run_in_recovery)
+        MU(run_in_recovery, first_run)
 
 except Exception as e:
     logger.critical(f"В Компоненте Trey произошла неизвестная ошибка!\n{e}")
-    MU(run_in_recovery)
+    MU(run_in_recovery, first_run)
 finally:
     if run_in_recovery:
         logger.info("T - Завершение работы, выгрузка кустов реестра...")

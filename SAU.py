@@ -28,13 +28,13 @@ import re
 from loguru import logger
 
 #Чтение конфига
-import config
+from config import *
 #Запуск команд
 from OF import run_command
 #Случайные загаловки
 from RS import random_string
 
-settings_and_update_version = "1.0.6 Beta"
+settings_and_update_version = "1.0.7 Beta"
 
 SETTINGS_BACKUP_PREFIX = "settings_backup"
 ARCHIVE_PATH = "code_mount.zip"
@@ -807,7 +807,9 @@ def settings_mount():
 
     window.mainloop()
 
-def SAU():
+def SAU(first_run=False):
+    if first_run:
+        messagebox.showinfo(random_string(), "Учтите, что изменение параметров невозможно без перекомпиляции программы!\nТакже данный Компонент будет использован для обновления программы с собственной настройкой.\n\nЕсли вы скачали заготовленную версию или вы переместили файл, то дальше возникнет ошибка.")
     extract_archive()
     try:
         settings_mount()
@@ -815,5 +817,5 @@ def SAU():
         logger.critical(f"Во время установки произошла неизвестная ошибка:\n{e}")
 
 if __name__ == "__main__":
-    logger.add(config_log_path, format="{time} {level} {message}", rotation="10 MB", compression="zip")
+    logger.add(log_path, format="{time} {level} {message}", rotation="10 MB", compression="zip")
     SAU()

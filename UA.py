@@ -7,16 +7,18 @@
 #Или в файле COPYING.txt в архиве с установщиком
 #Copyleft 🄯 NEO Organization, Departament K 2024 - 2025
 #Coded by @AnonimNEO (Telegram)
-
-import winreg
-from loguru import logger
+#Обучение
+from tkinter import messagebox
+from RS import random_string
+#Работа с реестром и списками
 from typing import Tuple, Any
+import winreg
+#Логирование
+from loguru import logger
 
 from OF import get_offline_reg_path, loaded_hive_names
 
-unlock_all_version = "1.1.1 Beta"
-
-
+unlock_all_version = "1.1.3 Beta"
 
 #Возвращает безопасное 'нулевое' значение для сброса параметра
 def get_new_value_for_type(reg_type: int) -> Tuple[Any, int]:
@@ -37,40 +39,40 @@ def reset_reg_values(hkey_const, chapter, params, ua_globals, is_exception, run_
     key_handle = None
     hive_name = ua_globals["HKEY_MAP"].get(hkey_const, str(hkey_const))
 
-    # Получаем корректный путь в зависимости от среды
+    #Получаем корректный путь в зависимости от среды
     final_hkey, final_subkey = get_offline_reg_path(hkey_const, chapter, ua_globals, run_in_recovery)
 
     logger.info(f"UA - Обработка раздела: {hive_name}\\{chapter} (Режим исключений: {is_exception})")
 
     try:
-        # Открываем ключ с правами на чтение и запись
-        # KEY_QUERY_VALUE нужен для перечисления параметров, KEY_SET_VALUE для изменения
+        #Открываем ключ с правами на чтение и запись
+        #KEY_QUERY_VALUE нужен для перечисления параметров, KEY_SET_VALUE для изменения
         key_handle = winreg.OpenKey(final_hkey, final_subkey, 0, winreg.KEY_SET_VALUE | winreg.KEY_QUERY_VALUE | winreg.KEY_ENUMERATE_SUB_KEYS)
 
         targets = []
 
         if is_exception:
-            # Режим исключений: получаем список всех параметров в разделе
+            #получаем список всех параметров в разделе
             try:
                 i = 0
                 while True:
-                    # Получаем имя параметра по индексу
+                    #Получаем имя параметра по индексу
                     param_name, _, _ = winreg.EnumValue(key_handle, i)
-                    # Если имени нет в списке исключений — добавляем в очередь на сброс
+                    #Если имени нет в списке исключений — добавляем в очередь на сброс
                     if param_name not in params:
                         targets.append(param_name)
                     i += 1
             except OSError:
-                # OSError возникает, когда параметры для перечисления закончились
+                #OSError возникает, когда параметры для перечисления закончились
                 pass
         else:
-            # Обычный режим: работаем только с тем, что передали в списке
+            #работаем только с тем, что передали в списке
             targets = params
 
-        # Процесс сброса
+        #Процесс сброса
         for param in targets:
             try:
-                # Уточняем текущий тип параметра
+                #Уточняем текущий тип параметра
                 _, reg_type = winreg.QueryValueEx(key_handle, param)
                 new_val, r_type = get_new_value_for_type(reg_type)
 
@@ -98,9 +100,12 @@ def reset_reg_values(hkey_const, chapter, params, ua_globals, is_exception, run_
 
 
 #Разблокировка всего
-def UA(run_in_recovery):
+def UA(run_in_recovery, first_run):
+    if first_run:
+        messagebox.showinfo(random_string(), "Данный Компонент не имеет графического интерфейса, он выполнит свою работу в фоне и сообщит при завершении.")
+
     try:
-        system_hive = loaded_hive_names.get("SYSTEM", "Offline_SYSTEM")
+        #system_hive = loaded_hive_names.get("SYSTEM", "Offline_SYSTEM")
         software_hive = loaded_hive_names.get("SOFTWARE", "Offline_SOFTWARE")
         user_hive = loaded_hive_names.get("USER", "Offline_USER")
 
@@ -141,8 +146,11 @@ def UA(run_in_recovery):
 
         #Системные политики (HKLM)
         reset_reg_values(winreg.HKEY_LOCAL_MACHINE, r"Software\Microsoft\Windows\CurrentVersion\Policies\System", [], ua_globals, True, run_in_recovery)
+
+        messagebox.showinfo(random_string(), "Разблокировка всего завершила свою работу, ошибок вроде не возникло, подробнее в лог файле.")
     except Exception as e:
-        logger.critical(f"В Компоненте UnlockAll произошла неизвестная ошибка:\n{e}")
+        ua_error_text = f"В Компоненте UnlockAll произошла неизвестная ошибка:\n{e}"
+        logger.critical(ua_error_text)
+        messagebox.showerror(random_string(), ua_error_text)
 
     logger.info("UA - Работа компонента завершена.")
-

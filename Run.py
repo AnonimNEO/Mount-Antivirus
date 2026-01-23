@@ -8,6 +8,8 @@
 #Copyleft 🄯 NEO Organization, Departament K 2024 - 2025
 #Coded by @AnonimNEO (Telegram)
 
+#Обучение
+from tkinter import messagebox
 #Логирование Ошибок
 from loguru import logger
 #Интерфейс
@@ -20,11 +22,13 @@ import os
 from RS import random_string
 
 global user_name
-run_version = "0.9.9 Beta"
+run_version = "0.9.10 Beta"
 
 @logger.catch
-def Run():
+def Run(first_run):
     try:
+        if first_run:
+            messagebox.showinfo(random_string(), "Это аналог утилиты Win+R.")
         @logger.catch
         def start_file_with_admin(path):
             software = 1

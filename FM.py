@@ -34,9 +34,11 @@ from RS import random_string
 from config import *
 
 #Глобальная переменная версии
-file_manager_version = "4.8.3 Beta"
+file_manager_version = "4.8.6 Beta"
 
-def FM(run_in_recovery):
+def FM(run_in_recovery, first_run):
+    if first_run:
+        messagebox.showinfo(random_string(), "Добро пожаловать в Файловый Менеджер!\nДанный Компонент поддерживает:\n1)Полное управление с клавиатуры\n2)Поиск - чтобы его вызвать нажмите на пункт в верхней левой части окна.")
     try:
         #Получаем Имени текущего пользователя
         def get_user_name():
@@ -228,7 +230,7 @@ def FM(run_in_recovery):
                 self.path_entry = ttk.Entry(self.toolbar_frame, textvariable=self.path_var, font=("Arial", 10))
                 self.path_entry.pack(side="left", fill="x", expand=True, padx=5, ipady=2)
 
-                #При нажатие Enter обновляем путь
+                #При нажатии Enter обновляем путь
                 self.path_entry.bind("<Return>", self.on_path_enter)
 
                 #Контекстное меню по ПКМ
@@ -252,7 +254,7 @@ def FM(run_in_recovery):
                 tab_frame = ttk.Frame(self.notebook, padding=5)
 
                 #Создаем Таблицу и Скролл бар
-                tree = ttk.Treeview(tab_frame, selectmode="browse", show="headings") 
+                tree = ttk.Treeview(tab_frame, selectmode="extended", show="headings")
                 vsb = ttk.Scrollbar(tab_frame, orient="vertical", command=tree.yview)
                 tree.configure(yscrollcommand=vsb.set)
 
@@ -587,27 +589,19 @@ def FM(run_in_recovery):
                 if not data: return
 
                 tree = data["tree"]
-                item_id = tree.identify_row(event.y)
+                #Определяем, есть ли под курсором какой-то элемент
+                item_under_cursor = tree.identify_row(event.y)
 
-                target_type = "item"
-                target_path = item_id
-
-                if not item_id:
-                    #Клик на пустом месте
+                #Если нажали на пустом месте
+                if not item_under_cursor:
                     target_type = "directory"
-                    target_path = data["path"] #Используем путь текущей вкладки
-                    #Сбрасываем фокус, чтобы было понятно, что работаем не с элементом
-                    tree.focus("")
-                    tree.selection_remove(tree.selection())
+                    target_path = data["path"] 
                 else:
-                    #Клик на элементе
-                    #Выделяем элемент, по которому кликнули
-                    tree.selection_set(item_id)
-                    tree.focus(item_id)
+                    target_type = "item"
+                    target_path = item_under_cursor
 
                 menu = self.build_context_menu(target_type, target_path)
 
-                #Показываем меню
                 try:
                     menu.tk_popup(event.x_root, event.y_root)
                 finally:
@@ -721,21 +715,98 @@ def FM(run_in_recovery):
 
 
 
-            #Кнопка Delete
-            def handle_key_delete(self):
+            #Вспомогательный метод для получения всех выделенных путей
+            def get_selected_items_paths(self):
                 data = self.get_current_tab_data()
-                if not data: return
-
+                if not data: return []
                 tree = data["tree"]
-                item_id = tree.focus()
-                if not item_id: return
+                return list(tree.selection())
 
-                #Защита от удаления ".." (пункт "вверх")
-                if item_id.endswith(".."):
+
+
+            def handle_key_delete(self):
+                selected_paths = self.get_selected_items_paths()
+                if not selected_paths: return
+
+                paths_to_delete = [p for p in selected_paths if not p.endswith("..")]
+                if not paths_to_delete: return
+
+                count = len(paths_to_delete)
+                msg = f"Вы уверены, что хотите удалить {count} эл.?" if count > 1 else f"Удалить '{os.path.basename(paths_to_delete[0])}'?"
+                
+                if not messagebox.askyesno(random_string(), f"{msg}\n\nЭто действие безвозвратно."):
                     return
 
-                #Удаляем элемент
-                self.delete_item(item_id)
+                for path in paths_to_delete:
+                    try:
+                        if os.path.isdir(path):
+                            shutil.rmtree(path)
+                        else:
+                            os.remove(path)
+                    except Exception as e:
+                        logger.error(f"FM - Ошибка удаления {path}: {e}")
+                        messagebox.showerror("Ошибка", f"Не удалось удалить {os.path.basename(path)}:\n{e}")
+                
+                self.on_refresh()
+
+
+
+            def handle_copy(self):
+                selected_paths = self.get_selected_items_paths()
+                paths = [p for p in selected_paths if not p.endswith("..")]
+                if not paths: return
+                
+                self.clipboard_data = {"paths": paths, "action": "copy"}
+                logger.info(f"FM - Скопировано элементов: {len(paths)}")
+
+
+
+            def handle_cut(self):
+                selected_paths = self.get_selected_items_paths()
+                paths = [p for p in selected_paths if not p.endswith("..")]
+                if not paths: return
+                
+                self.clipboard_data = {"paths": paths, "action": "cut"}
+                logger.info(f"FM - Вырезано элементов: {len(paths)}")
+
+
+
+            def handle_paste(self):
+                if "paths" not in self.clipboard_data or not self.clipboard_data["paths"]:
+                    messagebox.showinfo(random_string(), "Буфер обмена пуст.")
+                    return
+
+                src_paths = self.clipboard_data["paths"]
+                action = self.clipboard_data["action"]
+                data = self.get_current_tab_data()
+                if not data or not data["path"]: return
+                
+                dest_dir = data["path"]
+
+                for src_path in src_paths:
+                    if not os.path.exists(src_path): continue
+                    
+                    dest_path = os.path.join(dest_dir, os.path.basename(src_path))
+                    
+                    #Проверка на копирование в самого себя
+                    if os.path.normpath(src_path) == os.path.normpath(dest_path):
+                        continue
+
+                    try:
+                        if action == "copy":
+                            if os.path.isdir(src_path):
+                                shutil.copytree(src_path, dest_path, dirs_exist_ok=True)
+                            else:
+                                shutil.copy2(src_path, dest_path)
+                        elif action == "cut":
+                            shutil.move(src_path, dest_path)
+                    except Exception as e:
+                        logger.error(f"FM - Ошибка вставки {src_path}: {e}")
+                        
+                if action == "cut":
+                    self.clipboard_data = {"paths": [], "action": None}
+                    
+                self.on_refresh()
 
 
 
@@ -901,7 +972,6 @@ def FM(run_in_recovery):
                     properties_data = []
 
                 #Заполнение таблицы
-                #Настраиваем теги для выделения разделителей и заголовков
                 tree.tag_configure("separator", background="#F0F0F0")
                 tree.tag_configure("header", font=("Arial", 9, "bold"))
 
@@ -1082,7 +1152,7 @@ def FM(run_in_recovery):
 
                     menu.add_separator()
 
-                    #Вырезать, Копировать, Вставить
+                    #Вырезать, копировать, вставить
                     menu.add_command(label="Вырезать", accelerator="Ctrl+X",
                                      command=self.handle_cut, state=item_state)
                     menu.add_command(label="Копировать", accelerator="Ctrl+C",
@@ -1240,7 +1310,7 @@ def FM(run_in_recovery):
 
 
 
-            #Вставляем оюъект из буфера программы
+            #Вставляем объект из буфера программы
             def handle_paste(self):
                 if not self.clipboard_data["path"]:
                     messagebox.info(random_string(), "Буфер обмена пуст, вставка отменена.")
@@ -1464,7 +1534,7 @@ def FM(run_in_recovery):
 
                 #Получаем данные текущей вкладки, чтобы определить начальный каталог
                 current_data = self.get_current_tab_data()
-                current_path = current_data["path"] if current_data else os.path.expanduser(default_path)
+                #current_path = current_data["path"] if current_data else os.path.expanduser("C:\\")
 
                 #Переменные для хранения состояния
                 self.search_text_var = tk.StringVar(self.search_window, value="")

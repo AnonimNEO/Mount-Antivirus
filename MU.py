@@ -9,84 +9,85 @@
 #Coded by @AnonimNEO (Telegram)
 
 #Интерфейс
-from tkinter import ttk, Menu
+from tkinter import ttk, Label, Button, messagebox
 import tkinter as tk
 #Логирование Ошибок
 from loguru import logger
 
 #Импорт Компонентов
-from R import R
-from UA import UA
-from CC import CC
-from SP import SP
-from FM import FM
-from PM import PM
-from LP import LP
-from Run import Run
 from ARM import ARM
-from OF import open_with
+from CC import CC
+from FM import FM
+from FR import FR
+from OF import check_first_run, run_lp, run_obpc, open_with
+from PM import PM
+from R import R
 from RS import random_string
+from Run import Run
+from SP import SP
+from UA import UA
+from UM import UM
 
+from config import *
 
 global settings_path, animation_txt, animation_default, unlocker_version
-unlocker_version = "1.7.19 Beta"
+unlocker_version = "2.0.1 Beta"
 
 @logger.catch
-def MU(run_in_recovery):
+def MU(run_in_recovery, first_run):
+    if first_run:
+        messagebox.showinfo(random_string(), "Данное окно будет автоматически появляться в среде восстановления или при ошибке создания иконки в трейе.")
+
     try:
         mount_unlocker = tk.Tk()
         mount_unlocker.focus_force()
         style = ttk.Style()
         style.theme_use("clam")
-        mount_unlocker.geometry("370x320")
-
+        mount_unlocker.geometry("750x300")
         mount_unlocker.title(random_string())
-        header_text = "Монтировка Анлокер"
-        header_label = tk.Label(mount_unlocker, font=("Arial", 32, "bold"))
-        header_label.pack()
 
-        #Каждая буква будет иметь свой цвет из радуги
-        rainbow_colors = ["red", "orange", "yellow2", "green", "lightgreen", "blue", "skyblue", "violet"]
+        tab_control = ttk.Notebook(mount_unlocker)
 
-        def update_text_color(text, index, label):
-            label.config(text=text[:index], fg=rainbow_colors[index % len(rainbow_colors)])
-            mount_unlocker.after(150, update_text_color, text, index+1, label)
+        tab_components = ttk.Frame(tab_control)
+        tab_control.add(tab_components, text="Компоненты")
+        tab_utilities = ttk.Frame(tab_control)
+        tab_control.add(tab_utilities, text="Утилиты")
+        tab_protect = ttk.Frame(tab_control)
+        tab_control.add(tab_protect, text="Защита")
+        tab_other = ttk.Frame(tab_control)
+        tab_control.add(tab_other, text="Прочее")
 
-        update_text_color(header_text, 0, header_label)
+        Label(tab_components, text="Компоненты", font="Default 24").grid(row=0, column=0)
 
-        process_manager_button = tk.Button(mount_unlocker, text="Менеджер Процессов", command=lambda:PM(run_in_recovery), font=("Arial", 24))
-        process_manager_button.pack()
+        Button(tab_components, text="Мастер Автозагрузки", font="Default 24", command=lambda:ARM(run_in_recovery, first_run)).grid(row=1, column=0)
+        Button(tab_components, text="Менеджер Процессов", font="Default 24", command=lambda:PM(run_in_recovery, first_run)).grid(row=1, column=1)
+        Button(tab_components, text="Файловый Менеджер", font="Default 24", command=lambda:FM(run_in_recovery, first_run)).grid(row=2, column=0)
+        Button(tab_components, text="Разблокировка Всего", font="Default 24", command=lambda:UA(run_in_recovery, first_run)).grid(row=2, column=1)
 
-        file_manager_button = tk.Button(mount_unlocker, text="Файловый Менеджер", command=lambda:FM(run_in_recovery), font=("Arial", 24))
-        file_manager_button.pack()
+        Label(tab_utilities, text="Утилиты", font="Default 24").grid(row=0, column=0)
 
-        autoload_button = tk.Button(mount_unlocker, text="Мастер Автозагрузки", command=lambda:ARM(run_in_recovery), font=("Arial", 24))
-        autoload_button.pack()
+        Button(tab_utilities, text="Замена Setch и Utilman", font="Default 24", command=FR).grid(row=1, column=0)
+        Button(tab_utilities, text="     Очистка Temp       ", font="Default 24", command=lambda:CC(run_in_recovery, first_run)).grid(row=1, column=1)
+        Button(tab_utilities, text="     Запуск от имени администратора    ", font="Default 15", command=lambda:Run(first_run)).grid(row=2, column=0)
+        Button(tab_utilities, text="   Перезапустить ПК   ", font="Default 24", command=R).grid(row=2, column=1)
+        Button(tab_utilities, text="Голосовое Управление", font="Default 24", command=lambda: run_obpc(run_in_recovery, first_run)).grid(row=3, column=0)
+        Button(tab_utilities, text=" Открыть с помощью ", font="Default 24", command=lambda:open_with).grid(row=3, column=1)
 
-        unlock_button = tk.Button(mount_unlocker, text="Разблокировка всего", command=lambda:UA(run_in_recovery), font=("Arial", 24))
-        unlock_button.pack()
+        Label(tab_protect, text="Защита", font="Default 24").grid(row=0, column=0)
 
-        copyright_label = tk.Label(mount_unlocker, text=f"Mount Unlocker {unlocker_version}", anchor="w")
-        copyright_label.pack(side="bottom", anchor="w", padx=10, pady=10)
+        Button(tab_protect, text=" Защита Нагрузки " , font="Default 24", command=lambda:run_lp(run_in_recovery, first_run)).grid(row=1, column=0)
+        Button(tab_protect, text="Пугало от вирусов" , font="Default 24", command=lambda:SP(run_in_recovery, first_run)).grid(row=2, column=0)
 
-        about_menu = tk.Menu(mount_unlocker)
-        mount_unlocker.config(menu=about_menu)
+        Label(tab_other, text="Прочее", font="Default 24").grid(row=0, column=0)
 
-        #Создание Меню
-        main_menu = Menu(mount_unlocker)
-        mount_unlocker.config(menu=main_menu)
+        Button(tab_other, text="Менеджер Пользователей", font="Default 24", command=UM).grid(row=1, column=0)
+        Button(tab_other, text="Включить режим обучения", font="Default 24", command=lambda:check_first_run(delete=True)).grid(row=2, column=0)
 
-        #Пункт "Утилиты"
-        utilities_menu = Menu(main_menu, tearoff=0)
-        main_menu.add_cascade(label="Утилиты", menu=utilities_menu)
-        utilities_menu.add_command(label="Scarecrow Protection", command=lambda:SP(run_in_recovery))
-        utilities_menu.add_command(label="Открыть С Помощью", command=open_with)
-        utilities_menu.add_command(label="Запустить очистку Temp", command=lambda:CC(run_in_recovery))
-        utilities_menu.add_command(label="Запустить LoadProtection", command=lambda:LP(run_in_recovery))
-        utilities_menu.add_command(label="Запустить от имени Админа", command=Run)
-        utilities_menu.add_command(label="Перезапустить ПК", command=R)
+        tab_control.pack(fill="both", expand=0)
+
+        copyleft_label = tk.Label(mount_unlocker, text=f"Mount Unlocker {unlocker_version}", anchor="w")
+        copyleft_label.pack(side="bottom", anchor="w", padx=10, pady=10)
 
         mount_unlocker.mainloop()
-
     except Exception as e:
         logger.critical(f"В Компоненте MountUnlocker произошла неизвестная ошибка!\n{e}")

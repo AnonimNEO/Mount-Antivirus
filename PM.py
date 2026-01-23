@@ -9,7 +9,7 @@
 #Coded by @AnonimNEO (Telegram)
 
 #Интерфейс
-from tkinter import ttk, messagebox, simpledialog
+from tkinter import ttk, messagebox
 import tkinter as tk
 #Логирование
 from loguru import logger
@@ -18,7 +18,7 @@ from config import *
 from OF import Psutil
 from RS import random_string
 
-process_manager_version = "1.5.3 Beta"
+process_manager_version = "1.6.2 Beta"
 
 GUI_ELEMENTS = {
     "manager": None,
@@ -36,7 +36,10 @@ GUI_ELEMENTS = {
 
 
 
-def PM(run_in_recovery):
+def PM(run_in_recovery, first_run):
+    if first_run:
+        messagebox.showinfo(random_string(), "Добро пожаловать в Менеджер Процессов, он поддерживает:\n1)Выделение нескольких процессов и работу с ними\n2)Поиск - чтобы его вызвать нажмите на пункт вверху левой части окна.\n3)Замороженные процессы - помечены серым цветом, а критические - красным. Также есть вкладки для удобной навигации.\n\nУчтите, что windows создаёт свои 4 критических процессов svhost.exe, но вирус может изменить эти значения, будьте бдительны!")
+
     if not run_in_recovery:
         import psutil
         from EC import EC, get_process_critical_status
@@ -204,35 +207,32 @@ def PM(run_in_recovery):
 
 
         #Действие с процессами
-        def action_process(gui_elements, action, process_id):
-            try:
-                proc = psutil.Process(process_id)
+        def action_process(gui_elements, action, process_ids):
+            if not isinstance(process_ids, (list, tuple)):
+                process_ids = [process_ids]
+            
+            for pid in process_ids:
+                try:
+                    proc = psutil.Process(int(pid))
 
-                if action == "kill":
-                    proc.terminate()
+                    if action == "kill":
+                        proc.terminate()
+                    elif action == "suspend":
+                        proc.suspend()
+                    elif action == "resume":
+                        proc.resume()
+                    elif action == "edit_critical_to_false":
+                        EC(int(pid), False)
+                    elif action == "edit_critical_to_true":
+                        EC(int(pid), True)
 
-                elif action == "suspend":
-                    proc.suspend()
+                except (psutil.NoSuchProcess, psutil.AccessDenied):
+                    continue
+                except Exception as e:
+                    logger.critical(f"PM - Ошибка при {action} для PID {pid}: {e}")
 
-                elif action == "resume":
-                    proc.resume()
-
-                elif action == "edit_critical_to_false":
-                    EC(process_id, False)
-
-                elif action == "edit_critical_to_true":
-                    EC(process_id, True)
-
-                #Обновляем таблицу после действия
-                gui_elements["manager"].after(100, lambda: load_current_tab_data(gui_elements))
-
-            except psutil.NoSuchProcess:
-                pass
-            except psutil.AccessDenied:
-                pass
-            except Exception as e:
-                process_name = get_process_name(process_id)
-                logger.critical(f"PM - Неизвестная ошибка при выполнении {action} для {process_name} (pid: {process_id}):\n{e}")
+            # Обновляем таблицу один раз после обработки всех процессов
+            gui_elements["manager"].after(200, lambda: load_current_tab_data(gui_elements))
 
 
 
@@ -279,7 +279,7 @@ def PM(run_in_recovery):
 
 
         #Обработка смены вкладки
-        def on_tab_change(event, gui_elements):
+        def on_tab_change(gui_elements):
             selected_tab = gui_elements["notebook"].tab(gui_elements["notebook"].select(), "text")
             if selected_tab != gui_elements["current_tab"]:
                 gui_elements["current_tab"] = selected_tab
@@ -296,7 +296,6 @@ def PM(run_in_recovery):
 
         #Установка столбиков, в зависимости от вкладки
         def set_treeview_columns(gui_elements):
-            #Удаляем и пересоздаем таблицу и скроллбар для текущей вкладки
             if gui_elements["tree"] and gui_elements["tree"].winfo_exists():
                 gui_elements["tree"].destroy()
             if gui_elements["vsb"] and gui_elements["vsb"].winfo_exists():
@@ -304,60 +303,41 @@ def PM(run_in_recovery):
 
             current_frame = gui_elements["tabs"][gui_elements["current_tab"]]
 
-            gui_elements["tree"] = ttk.Treeview(current_frame, selectmode="browse")
+            # ВАЖНО: selectmode="extended" позволяет выделять через Ctrl и Shift
+            gui_elements["tree"] = ttk.Treeview(current_frame, selectmode="extended")
             gui_elements["tree"].pack(side="left", fill="both", expand=True)
 
             gui_elements["vsb"] = ttk.Scrollbar(current_frame, orient="vertical", command=gui_elements["tree"].yview)
             gui_elements["vsb"].pack(side="right", fill="y")
             gui_elements["tree"].configure(yscrollcommand=gui_elements["vsb"].set)
 
-            #Привязка ПКМ
             gui_elements["tree"].bind("<Button-3>", lambda e: handle_right_click(e, gui_elements))
 
-            #Конфигурация стилей для подсветки
             style = ttk.Style()
             style.configure("Treeview", rowheight=25)
-            style.map("Treeview", background=[("selected", "blue")])
-
-            #Критичный
             gui_elements["tree"].tag_configure("critical", background="red", foreground="white")
-            #Замороженный
             gui_elements["tree"].tag_configure("suspended", background="gray", foreground="white")
-            #Админ
             gui_elements["tree"].tag_configure("admin", background="orange", foreground="black")
 
             columns = ("PID", "Имя Процесса", "Путь к файлу", "Пользователь", "Критичность", "Статус")
-            headings = dict(zip(columns, columns))
-
             gui_elements["tree"]["columns"] = columns
             gui_elements["tree"]["show"] = "headings"
 
-            #Добавляем функцию-обработчик клика по заголовку
             def sort_column_data(col):
-                #Если кликнули на тот же столбец, меняем направление
                 if gui_elements["sort_column"] == col:
                     gui_elements["sort_direction"] = "desc" if gui_elements["sort_direction"] == "asc" else "asc"
                 else:
-                    #Иначе, устанавливаем новый столбец и направление по умолчанию (asc)
                     gui_elements["sort_column"] = col
                     gui_elements["sort_direction"] = "asc"
-
-                #Перезагружаем данные с учетом новой сортировки
                 load_current_tab_data(gui_elements)
 
-            #Установка ширины колонок и привязка сортировки
-            col_widths = {"PID": 20, "Имя Процесса": 100, "Путь к файлу": 250, "Критичность": 50, "Статус": 35}
+            col_widths = {"PID": 50, "Имя Процесса": 150, "Путь к файлу": 250, "Критичность": 80, "Статус": 80}
             for col in columns:
-                heading_text = headings.get(col, col)
-                #Добавляем символ направления сортировки к заголовку, если это текущий столбец
+                heading_text = col
                 if col == gui_elements["sort_column"]:
-                    arrow = " ▼" if gui_elements["sort_direction"] == "desc" else " ▲"
-                    heading_text += arrow
-
-                gui_elements["tree"].heading(col, text=heading_text,
-                                             command=lambda c=col: sort_column_data(c)) #Привязываем команду сортировки
+                    heading_text += " ▼" if gui_elements["sort_direction"] == "desc" else " ▲"
+                gui_elements["tree"].heading(col, text=heading_text, command=lambda c=col: sort_column_data(c))
                 gui_elements["tree"].column(col, width=col_widths.get(col, 150), anchor=tk.W)
-
 
 
         #Загружаем данные для активной вкладки и заполняем таблицу
@@ -370,7 +350,7 @@ def PM(run_in_recovery):
             saved_pid = None
             saved_scroll_pos = None #переменная для сохранения позиции скролла
             try:
-                #focus() возвращает iid (PID) элемента, который в фокусе
+                #focus() возвращает PID элемента, который в фокусе
                 focused_item_id = tree.focus()
                 #selection() возвращает список выделенных iid
                 selected_item_ids = tree.selection()
@@ -502,65 +482,35 @@ def PM(run_in_recovery):
 
 
         #Контекстное Меню
-        def show_context_menu(event, gui_elements, PM_data, item_id):
+        def show_context_menu(event, gui_elements, selected_pids):
             manager = gui_elements["manager"]
-            current_tab = gui_elements["current_tab"]
-
             menu = tk.Menu(manager, tearoff=0)
+            
+            count = len(selected_pids)
+            suffix = f" ({count} шт.)" if count > 1 else ""
 
-            if PM_data:
-                process_path = PM_data["Путь к файлу"]
-                process_name = PM_data["Имя Процесса"]
-                critical_state = "Критичный" if PM_data["Критичность"] else "Не критичный"
-                is_suspend = PM_data["Статус"] == "Заморожен"
-                process_id = PM_data["PID"]
+            #Проверка выделен один ли элемент
+            try:
+                a = selected_pids[1]
+            except Exception:
+                try:
+                    file_process = selected_pids[0]
+                    copy_to_clipboard(manager, file_process.exe)
+                except Exception:
+                    logger.error("PM - не удалось скопировать путь к файлу процесса")
 
-                if current_tab == "Все Процессы":
-                    menu.add_command(label=f"Убить Процесс ({critical_state})",
-                                     command=lambda: action_process(gui_elements, "kill", process_id))
-                    if is_suspend:
-                        menu.add_command(label="Разморозить",
-                                         command=lambda: action_process(gui_elements, "resume", process_id))
-                    else:
-                        menu.add_command(label="Заморозить",
-                                         command=lambda: action_process(gui_elements, "suspend", process_id))
-                    if get_process_critical_status(process_id, run_in_recovery):
-                        menu.add_command(label=f"Снять критичность",
-                                         command=lambda: action_process(gui_elements, "edit_critical_to_false", process_id))
-                    if not get_process_critical_status(process_id, run_in_recovery):
-                        menu.add_command(label=f"Сделать критичным",
-                                         command=lambda: action_process(gui_elements, "edit_critical_to_true", process_id))
-                    menu.add_separator()
-                    menu.add_command(label="Копировать путь", command=lambda: copy_to_clipboard(manager, process_path))
-                    menu.add_command(label="Копировать имя процесса", command=lambda: copy_to_clipboard(manager, process_name))
-                elif current_tab == "Критичные Процессы" or "Замороженные Процессы":
-                    menu.add_command(label=f"Снять критичность",
-                                     command=lambda: action_process(gui_elements, "edit_critical_to_false", process_id))
-                    menu.add_command(label=f"Убить Процесс ({critical_state})",
-                                     command=lambda: action_process(gui_elements, "kill", process_id))
-                    menu.add_command(label="Разморозить",
-                                     command=lambda: action_process(gui_elements, "resume", process_id))
-                    menu.add_separator()
-                    menu.add_command(label="Копировать путь", command=lambda: copy_to_clipboard(manager, process_path))
-                    menu.add_command(label="Копировать имя процесса", command=lambda: copy_to_clipboard(manager, process_name))
-                else:
-                    menu.add_command(label=f"Убить Процесс ({critical_state})",
-                                     command=lambda: action_process(gui_elements, "kill", process_id))
-                    if is_suspend:
-                        menu.add_command(label="Разморозить",
-                                         command=lambda: action_process(gui_elements, "resume", process_id))
-                    else:
-                        menu.add_command(label="Заморозить",
-                                         command=lambda: action_process(gui_elements, "suspend", process_id))
-                    if get_process_critical_status(process_id, run_in_recovery):
-                        menu.add_command(label=f"Снять критичность",
-                                         command=lambda: action_process(gui_elements, "edit_critical_to_false", process_id))
-                    if not get_process_critical_status(process_id, run_in_recovery):
-                        menu.add_command(label=f"Сделать критичным",
-                                         command=lambda: action_process(gui_elements, "edit_critical_to_true", process_id))
-                    menu.add_separator()
-                    menu.add_command(label="Копировать путь", command=lambda: copy_to_clipboard(manager, process_path))
-                    menu.add_command(label="Копировать имя процесса", command=lambda: copy_to_clipboard(manager, process_name))
+            if selected_pids:
+                menu.add_command(label=f"Убить процессы{suffix}",
+                                 command=lambda: action_process(gui_elements, "kill", selected_pids))
+                menu.add_command(label=f"Заморозить{suffix}", 
+                                 command=lambda: action_process(gui_elements, "suspend", selected_pids))
+                menu.add_command(label=f"Разморозить{suffix}", 
+                                 command=lambda: action_process(gui_elements, "resume", selected_pids))
+                menu.add_separator()
+                menu.add_command(label=f"Сделать критичными{suffix}", 
+                                 command=lambda: action_process(gui_elements, "edit_critical_to_true", selected_pids))
+                menu.add_command(label=f"Снять критичность{suffix}", 
+                                 command=lambda: action_process(gui_elements, "edit_critical_to_false", selected_pids))
 
             try:
                 menu.tk_popup(event.x_root, event.y_root)
@@ -571,18 +521,18 @@ def PM(run_in_recovery):
 
         #Обработчик ПКМ
         def handle_right_click(event, gui_elements):
-            #Получаем элемент, на котором был сделан клик
-            item_id = gui_elements["tree"].identify_row(event.y)
-            gui_elements["tree"].selection_set(item_id) #Выделяем элемент
-            if item_id:
-                process_id = int(item_id)
-                #Находим исходные данные для выбранного элемента по PID
-                PM_data = next((data for data in gui_elements["treeview_data"] if data.get("PID") == process_id), None)
-            else:
-                #Если клик был не на элементе
-                PM_data = None
-
-            show_context_menu(event, gui_elements, PM_data, item_id)
+            tree = gui_elements["tree"]
+            item_under_cursor = tree.identify_row(event.y)
+            
+            selected_items = list(tree.selection())
+            
+            # Если мы нажали ПКМ на элемент, который не выделен — выделяем только его
+            if item_under_cursor and item_under_cursor not in selected_items:
+                tree.selection_set(item_under_cursor)
+                selected_items = [item_under_cursor]
+            
+            if selected_items:
+                show_context_menu(event, gui_elements, selected_items)
 
 
 
@@ -596,37 +546,28 @@ def PM(run_in_recovery):
         #Обработчик клавиш
         def handle_key_action(event, gui_elements):
             tree = gui_elements["tree"]
-
-            #Получаем PID выделенного элемента
-            selected_items = tree.selection()
+            selected_items = tree.selection() # Получаем все выделенные ID
+            
             if not selected_items:
-                return #Ничего не делаем, если ничего не выбрано
-
-            #Так как selectmode="browse", мы ожидаем только один элемент
-            selected_item_id = selected_items[0]
-            try:
-                process_id = int(selected_item_id)
-            except ValueError:
-                return #ID должен быть числом (PID)
+                return
 
             action = None
             key = event.keysym
 
-            if key in ["Delete", "Delete_Last"]: #Клавиша Delete (Удалить)
+            if key in ["Delete", "Delete_Last"]:
                 action = "kill"
-            elif key == "s": #Клавиша S (Заморозить)
+            elif key in ["s", "S"]:
                 action = "suspend"
-            elif key == "u": #Клавиша U (Разморозить)
+            elif key in ["u", "U"]:
                 action = "resume"
-            elif key == "c": #Клавиша C (Критичность)
-                #Для критичности нужно определить текущее состояние
-                is_critical = get_process_critical_status(process_id)
+            elif key in ["c", "C"]:
+                # Для массового изменения берем статус первого элемента как образец
+                first_pid = int(selected_items[0])
+                is_critical = get_process_critical_status(first_pid, False)
                 action = "edit_critical_to_false" if is_critical else "edit_critical_to_true"
 
             if action:
-                #Выполняем соответствующее действие
-                action_process(gui_elements, action, process_id)
-
+                action_process(gui_elements, action, list(selected_items))
 
 
         PM = tk.Tk()

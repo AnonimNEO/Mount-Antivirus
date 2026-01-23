@@ -24,7 +24,10 @@ from RS import random_string
 
 scarecrow_protection_version = "0.3.5 Beta"
 
-def SP(run_in_recovery):
+def SP(run_in_recovery, first_run):
+    if first_run:
+        messagebox.showinfo(random_string(), "Данный Компонент позволяет симулировать на вашем компьютере определённое программное обеспечение, которые вирусы стилеры обходят стороной.\n\nЛучше не пытайтесь симулировать или удалять ПО которое у вас установлено, это может привести к поломке сторонней программы.")
+
     try:
         if run_in_recovery:
             current_disc, found_disc = get_current_disc(run_in_recovery)

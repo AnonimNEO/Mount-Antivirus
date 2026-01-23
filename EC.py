@@ -13,6 +13,7 @@ from loguru import logger
 #Работа с ОС
 from ctypes import wintypes
 import ctypes
+import psutil
 
 from OF import Psutil
 

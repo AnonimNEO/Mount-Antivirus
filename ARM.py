@@ -27,11 +27,10 @@ import os
 
 from config import *
 from RS import random_string
-from OF import get_current_disc, Psutil, get_offline_reg_path, loaded_hive_names
+from OF import get_current_disc, get_offline_reg_path, loaded_hive_names
 
-global ARM_data, autorun_master_version, REG_TYPE_MAP, REG_TYPE_MAP_REV, CREATABLE_REG_TYPES, ARM_CORE_GLOBALS, GUI_ELEMENTS, ultimate_load_cpu, ultimate_load_gpu, ultimate_load_ram, ultimate_load_lam, loaded_hive_names
-autorun_master_version = "3.1.1 Beta"
-#loaded_hive_names = []
+global ARM_data, autorun_master_version, REG_TYPE_MAP, REG_TYPE_MAP_REV, CREATABLE_REG_TYPES, ARM_CORE_GLOBALS, GUI_ELEMENTS, ultimate_load_cpu, ultimate_load_gpu, ultimate_load_ram, ultimate_load_lam
+autorun_master_version = "3.2.3 Beta"
 
 REG_TYPE_MAP = {
     winreg.REG_SZ: "REG_SZ",
@@ -89,8 +88,8 @@ class TaskSchedulerManager:
             return None
 
     #Вспомогательная функция для получения имени задачи
-    def get_name(self, task_path):
-        return os.path.basename(task_path)
+    #def get_name(self, task_path):
+    #    return os.path.basename(task_path)
 
     #Вспомогательная функция для обхода всех задач в каталоге
     def traverse_folder(self, folder, all_tasks):
@@ -137,7 +136,7 @@ class TaskSchedulerManager:
             )
             return True
         except Exception as e:
-            logger.error(f"ARM - Ошибка изменения состояния COM-задачи {task_path_full}: {e}")
+            logger.error(f"ARM - Ошибка изменения состояния COM-задачи {task_path_full}:\n{e}")
             return False
 
     #Удаляет задачу через COM
@@ -156,15 +155,7 @@ class TaskSchedulerManager:
 
 
 
-def ARM(run_in_recovery):
-    #Условный импорт или использование заглушки
-    if run_in_recovery:
-        psutil = Psutil()
-    else:
-        import psutil
-
-
-
+def ARM(run_in_recovery, first_run):
     #Путь к каталогу автозагрузки пользователя
     if run_in_recovery:
         current_disc, found_disc = get_current_disc(run_in_recovery)
@@ -181,7 +172,7 @@ def ARM(run_in_recovery):
         if appdata_path is not None:
             user_startup = Path(appdata_path) / "Microsoft" / "Windows" / "Start Menu" / "Programs" / "Startup"
         else:
-            #Обработка случая, когда APPDATA не установлен (предотвращение TypeError).
+            user_startup = f"C:\\Users\\{default_user_name}\\AppData\\Microsoft\\Windows\\Start Menu\\Program\\Startup\\"
             logger.error("ARM - Переменная среды APPDATA не найдена. Невозможно получить путь автозагрузки пользователя. Используется заглушка Path('.').")
 
 
@@ -501,7 +492,7 @@ def ARM(run_in_recovery):
             try:
                 with winreg.OpenKey(final_hkey, final_subkey, 0, winreg.KEY_SET_VALUE | winreg.KEY_READ) as key:
                     winreg.SetValueEx(key, name, 0, reg_type, initial_value)
-                    logger.success(f"ARM - Создан параметр реестра: {name} с типом {reg_type_str} в {ARM_CORE_GLOBALS["HKEY_MAP"].get(hkey_const)}\\{subkey_path}")
+                    logger.success(f"ARM - Создан параметр реестра: {name} с типом {reg_type_str} в {ARM_CORE_GLOBALS['HKEY_MAP'].get(hkey_const)}\\{subkey_path}")
                     gui_elements["focus_after_update"] = {"type": "name", "value": name}
                     return True
             except PermissionError:
@@ -556,7 +547,7 @@ def ARM(run_in_recovery):
                 messagebox.showerror(random_string(), "Недостаточно прав для изменения реестра. Требуются права администратора.")
                 return False
             except ValueError as e:
-                logger.error(f"ARM - Ошибка преобразования значения для параметра реестра: {name} в {ARM_CORE_GLOBALS["HKEY_MAP"].get(hkey_const)}\\{subkey_path}: {e}")
+                logger.error(f"ARM - Ошибка преобразования значения для параметра реестра: {name} в {ARM_CORE_GLOBALS["HKEY_MAP"].get(hkey_const)}\\{subkey_path}:\n{e}")
                 return False
             except Exception as e:
                 messagebox.showerror(random_string(), f"Не удалось обновить параметр реестра '{name}'.\n{e}")
@@ -613,7 +604,7 @@ def ARM(run_in_recovery):
 
         #Вспомогательная функция для получения пути к папке задач
         def get_tasks_directory():
-            #Если режим восстановления - используем букву примонтированного диска
+            #Если режим восстановления - используем букву вмонтированного диска
             if run_in_recovery:
                 return Path(f"{current_disc}Windows\\System32\\Tasks")
             #Если обычная система - берем системный путь через переменную окружения
@@ -629,7 +620,7 @@ def ARM(run_in_recovery):
 
 
 
-        #Сохраняем кодировки UTF-16)
+        #Сохраняем кодировки UTF-16
         def save_xml_task(tree, file_path):
             try:
                 #Windows Tasks часто требуют UTF-16 LE и BOM
@@ -672,12 +663,28 @@ def ARM(run_in_recovery):
                         #Получаем автора
                         author = definition.RegistrationInfo.Author
 
+                        #Получаем дату создания
+                        try:
+                            date_created = str(task.Definition.RegistrationInfo.Date)
+                        except Exception:
+                            date_created = "01-01-1970 00:00:00"
+
+                        action_path = "Неизвестно"
+                        if task.Definition.Actions.Count > 0:
+                            action = task.Definition.Actions.Item(1)
+                            if action.Type == 0:
+                                #Извлекаем путь к исполняемому файлу из свойства Path самого действия
+                                raw_path = getattr(action, "Path", "Неизвестно")
+                                if raw_path != "Неизвестно":
+                                    action_path = os.path.abspath(raw_path)
+            
                         ARM_data.append({
                             "Имя": name,
                             "Вкл/Выкл": "Включен" if is_enabled else "Отключен",
                             "Путь": action_path,
                             "Автор": author,
-                            "TaskPath": full_path, #Здесь полный COM-путь
+                            "Дата создания": date_created,
+                            "TaskPath": full_path, 
                             "Enabled_raw": is_enabled
                         })
                     except Exception as e:
@@ -687,6 +694,7 @@ def ARM(run_in_recovery):
                             "Вкл/Выкл": "Ошибка",
                             "Путь": "Ошибка чтения",
                             "Автор": "Ошибка",
+                            "Дата создания": None,
                             "TaskPath": task.Path,
                             "Enabled_raw": False
                         })
@@ -818,7 +826,7 @@ def ARM(run_in_recovery):
                     return False
                 except Exception as e:
                     logger.error(f"ARM - Ошибка XML:\n{e}")
-                    messagebox.showerror(random_string(), f"Ошибка XML: {e}")
+                    messagebox.showerror(random_string(), f"Ошибка XML:\n{e}")
                     return False
 
 
@@ -845,7 +853,7 @@ def ARM(run_in_recovery):
                         return False
                 except Exception as e:
                     logger.error(f"ARM - Ошибка удаления XML файла:\n{e}")
-                    messagebox.showerror(random_string(), f"Не удалось удалить файл: {e}")
+                    messagebox.showerror(random_string(), f"Не удалось удалить файл:\n{e}")
                     return False
 
 
@@ -1007,7 +1015,7 @@ def ARM(run_in_recovery):
 
 
 
-        #Восстановляем фокус после обновления данных
+        #Воссанавливываем фокус после обновления данных
         def restore_focus_after_update(gui_elements):
             tree = gui_elements["tree"]
             focus_info = gui_elements["focus_after_update"]
@@ -1067,10 +1075,24 @@ def ARM(run_in_recovery):
                 gui_elements["treeview_data"] = get_dll_startup(ARM_CORE_GLOBALS)
                 columns = ["Имя Параметра", "Битность", "Значение Параметра", "Путь Параметра"]
             elif current_tab == "CmdLine":
+                if first_run:
+                    messagebox.showinfo(random_string(), "В этой вкладке можно сразу включить отображение курсора в CmdLine.")
                 gui_elements["treeview_data"] = get_cmdline_startup(ARM_CORE_GLOBALS)
                 columns = ["Имя Параметра", "Значение Параметра", "Тип Параметра", "Путь Параметра"]
             elif current_tab == "Планировщик":
-                gui_elements["treeview_data"] = get_task_scheduler_startup()
+                if first_run:
+                    messagebox.showinfo(random_string(), 'Во вкладке планировщик отображается так много задач, потому что вирусы могли модернизировать задачи, но такое крайне редко, поэтому вы можете отключить отображение задач без графа "создан". Для этого нажмите пункты в верхней панели окна: вид->Показывать только задачи с датой.')
+
+                raw_tasks = get_task_scheduler_startup()
+                
+                if show_only_with_date.get():
+                    gui_elements["treeview_data"] = [
+                        t for t in raw_tasks 
+                        if t.get("Дата создания") and t.get("Дата создания") not in ["", "Ошибка", "01-01-1970 00:00:00"]
+                    ]
+                else:
+                    gui_elements["treeview_data"] = raw_tasks
+                    
                 columns = ["Имя", "Вкл/Выкл", "Путь", "Автор"]
             else:
                 gui_elements["treeview_data"] = []
@@ -1196,7 +1218,6 @@ def ARM(run_in_recovery):
         def copy_to_clipboard(master, text):
             master.clipboard_clear()
             master.clipboard_append(text)
-            messagebox.showinfo(random_string(), "Скопировано в буфер обмена.")
 
 
 
@@ -1227,9 +1248,8 @@ def ARM(run_in_recovery):
 
         #Подтверждение и удаление файла
         def confirm_and_delete_file(gui_elements, file_path, file_name, item_id):
-            if messagebox.askyesno(random_string(), f"Вы уверены, что хотите удалить файл автозагрузки:\n'{file_name}'?"):
-                if delete_file(file_path, file_name, item_id, gui_elements):
-                    load_current_tab_data(gui_elements, ARM_CORE_GLOBALS)
+            if delete_file(file_path, file_name, item_id, gui_elements):
+                load_current_tab_data(gui_elements, ARM_CORE_GLOBALS)
 
 
 
@@ -1260,20 +1280,17 @@ def ARM(run_in_recovery):
 
 
 
-        #Подтверждение и изменение состояния задачи планировщика (Откл или Вкл)
+        #Подтверждение и изменение состояния задачи планировщика (Выкл или Вкл)
         def confirm_and_set_task_state(gui_elements, task_path_full, task_name, enable, item_id):
-            action = "включить" if enable else "отключить"
-            if messagebox.askyesno(random_string(), f"Вы уверены, что хотите {action} задачу Планировщика:\n'{task_name}'?"):
-                if get_task_startup(task_path_full, enable, item_id, gui_elements):
-                    load_current_tab_data(gui_elements, ARM_CORE_GLOBALS)
+            if get_task_startup(task_path_full, enable, item_id, gui_elements):
+                load_current_tab_data(gui_elements, ARM_CORE_GLOBALS)
 
 
 
         #Подтверждение и удаление задачи планировщика
         def confirm_and_delete_task(gui_elements, task_path_full, task_name, item_id):
-            if messagebox.askyesno(random_string(), f"ВНИМАНИЕ! Вы уверены, что хотите безвозвратно удалить задачу Планировщика:\n'{task_name}'?"):
-                if delete_task_scheduler_task(task_path_full, task_name, item_id, gui_elements):
-                    load_current_tab_data(gui_elements, ARM_CORE_GLOBALS)
+            if delete_task_scheduler_task(task_path_full, task_name, item_id, gui_elements):
+                load_current_tab_data(gui_elements, ARM_CORE_GLOBALS)
 
 
 
@@ -1399,6 +1416,8 @@ def ARM(run_in_recovery):
         style = ttk.Style(ARM)
         style.theme_use("clam")
 
+        show_only_with_date = tk.BooleanVar(value=False)
+
         ARM.protocol("WM_DELETE_WINDOW", on_closing) 
 
         GUI_ELEMENTS["current_tab"] = "Пользовательская"
@@ -1406,6 +1425,14 @@ def ARM(run_in_recovery):
         GUI_ELEMENTS["focus_after_update"] = None
 
         menubar = tk.Menu(ARM)
+        view_menu = tk.Menu(menubar, tearoff=0)
+        view_menu.add_checkbutton(
+            label="Показывать только задачи с датой", 
+            variable=show_only_with_date,
+            command=lambda: load_current_tab_data(GUI_ELEMENTS, ARM_CORE_GLOBALS)
+        )
+        menubar.add_cascade(label="Вид", menu=view_menu)
+        
         menubar.add_cascade(label="О программе", command=about_ARM)
         ARM.config(menu=menubar)
 

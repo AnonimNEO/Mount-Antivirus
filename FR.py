@@ -16,7 +16,7 @@ from loguru import logger
 
 from RS import random_string
 
-file_replacer = "0.2.2 Beta"
+file_replacer_version = "0.2.2 Beta"
 
 def FR():
     def browse_source(source_var):
@@ -87,7 +87,7 @@ def FR():
 
     FR = tk.Tk()
     FR.title(random_string())
-    FR.geometry("400x250")
+    FR.geometry("400x210")
 
     source_path = tk.StringVar()
     target_path = tk.StringVar()
