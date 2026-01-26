@@ -5,19 +5,21 @@
 #ПРИ РАСПРОСТРАНЕНИИ ПРОГРАММЫ ВЫ ОБЯЗАНЫ ПРЕДОСТАВИТЬ ВСЕ ТЕЖЕ ПРАВА ПОЛЬЗОВАТЕЛЮ ЧТО И МЫ ВАМ, А ТАКЖЕ ЛИЦЕНЗИЯ GPL v3
 #Прочитать полную версию лицензии вы можете по ссылке Фонда Свободного Программного Обеспечения - https://www.gnu.org/licenses/gpl-3.0.html
 #Или в файле COPYING.txt в архиве с установщиком
-#Copyleft 🄯 NEO Organization, Departament K 2024 - 2025
+#Copyleft 🄯 NEO Organization, Departament K 2024 - 2026
 #Coded by @AnonimNEO (Telegram)
 
+#Интерфейс
 from tkinter import messagebox, simpledialog
 import tkinter as tk
 #Логирование Ошибок
 from loguru import logger
+#Капча
 import random
 import os
 
 from RS import random_string
 
-exit_version = "1.0.14 Beta"
+exit_version = "1.0.15 Beta"
 
 dyrachok_path = "C:\\ProgramData\\dyrachok.txt"
 
@@ -44,7 +46,9 @@ try:
                 f.write("debil")
             messagebox.showinfo(random_string(), "Вы смотрите тикток!\nПрограмма не будет закрыта.")
         else:
-            logger.info("Завершение Программы...")
+            logger.info("Завершение работы программы...")
+            global exit_ma
+            exit_ma = True
             os._exit(0)
 
 

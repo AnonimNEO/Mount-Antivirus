@@ -5,7 +5,7 @@
 #ПРИ РАСПРОСТРАНЕНИИ ПРОГРАММЫ ВЫ ОБЯЗАНЫ ПРЕДОСТАВИТЬ ВСЕ ТЕЖЕ ПРАВА ПОЛЬЗОВАТЕЛЮ ЧТО И МЫ ВАМ, А ТАКЖЕ ЛИЦЕНЗИЯ GPL v3
 #Прочитать полную версию лицензии вы можете по ссылке Фонда Свободного Программного Обеспечения - https://www.gnu.org/licenses/gpl-3.0.html
 #Или в файле COPYING.txt в архиве с установщиком
-#Copyleft 🄯 NEO Organization, Departament K 2024 - 2025
+#Copyleft 🄯 NEO Organization, Departament K 2024 - 2026
 #Coded by @AnonimNEO (Telegram)
 
 #Интерфейс
@@ -19,7 +19,7 @@ from ARM import ARM
 from CC import CC
 from FM import FM
 from FR import FR
-from OF import check_first_run, run_lp, run_obpc, open_with
+from OF import check_first_run, run_lp, run_obpc, open_with, get_current_disc
 from PM import PM
 from R import R
 from RS import random_string
@@ -28,10 +28,8 @@ from SP import SP
 from UA import UA
 from UM import UM
 
-from config import *
-
 global settings_path, animation_txt, animation_default, unlocker_version
-unlocker_version = "2.0.1 Beta"
+unlocker_version = "2.0.2 Beta"
 
 @logger.catch
 def MU(run_in_recovery, first_run):
@@ -44,6 +42,7 @@ def MU(run_in_recovery, first_run):
         style = ttk.Style()
         style.theme_use("clam")
         mount_unlocker.geometry("750x300")
+        mount_unlocker.resizable(False, False)
         mount_unlocker.title(random_string())
 
         tab_control = ttk.Notebook(mount_unlocker)
@@ -75,8 +74,13 @@ def MU(run_in_recovery, first_run):
 
         Label(tab_protect, text="Защита", font="Default 24").grid(row=0, column=0)
 
+        if run_in_recovery:
+            current_disc_r, found_disc = get_current_disc(run_in_recovery)
+        else:
+            current_disc_r = "C:\\"
+
         Button(tab_protect, text=" Защита Нагрузки " , font="Default 24", command=lambda:run_lp(run_in_recovery, first_run)).grid(row=1, column=0)
-        Button(tab_protect, text="Пугало от вирусов" , font="Default 24", command=lambda:SP(run_in_recovery, first_run)).grid(row=2, column=0)
+        Button(tab_protect, text="Пугало от вирусов" , font="Default 24", command=lambda:SP(run_in_recovery, first_run, current_disc_r)).grid(row=2, column=0)
 
         Label(tab_other, text="Прочее", font="Default 24").grid(row=0, column=0)
 

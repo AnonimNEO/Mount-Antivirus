@@ -5,7 +5,7 @@
 #ПРИ РАСПРОСТРАНЕНИИ ПРОГРАММЫ ВЫ ОБЯЗАНЫ ПРЕДОСТАВИТЬ ВСЕ ТЕЖЕ ПРАВА ПОЛЬЗОВАТЕЛЮ ЧТО И МЫ ВАМ, А ТАКЖЕ ЛИЦЕНЗИЯ GPL v3
 #Прочитать полную версию лицензии вы можете по ссылке Фонда Свободного Программного Обеспечения - https://www.gnu.org/licenses/gpl-3.0.html
 #Или в файле COPYING.txt в архиве с установщиком
-#Copyleft 🄯 NEO Organization, Departament K 2024 - 2025
+#Copyleft 🄯 NEO Organization, Departament K 2024 - 2026
 #Coded by @AnonimNEO (Telegram)
 
 #Интерфейс
@@ -14,16 +14,21 @@ from tkinter import messagebox, filedialog, simpledialog
 from loguru import logger
 #Работа с процессами
 import subprocess
+#Работа с потоками
+import threading
 #Работа с реестром
 import winreg
 #Работа с файлами и ОС
+import sys
 import os
 
+from OBPC import OBPC
+from LP import LP
 from RS import random_string
 from config import *
 
 global load_bush
-other_komponents_version = "0.5.4 Beta"
+other_komponents_version = "0.6.1 Beta"
 
 #Глобальные имена загруженных кустов
 loaded_hive_names = {
@@ -75,6 +80,14 @@ class Psutil:
 
 
 @logger.catch()
+def restart_ma():
+    logger.info("OF/restart_ma - Перезапуск программы...")
+    python = sys.executable
+    os.execl(python, python, *sys.argv)
+
+
+
+@logger.catch()
 def check_first_run(path="C:\\ProgramData\\first_run", delete=False):
     if delete:
         if os.path.exists(path):
@@ -99,22 +112,42 @@ def check_first_run(path="C:\\ProgramData\\first_run", delete=False):
 
 
 def run_lp(run_in_recovery, first_run):
+    fail_start_lp = 0
     if not start_lp:
-        thread_lp = threading.Thread(target=lambda:LP(run_in_recovery, first_run))
-        thread_lp.daemon = True
-        thread_lp.start()
+        try:
+            thread_lp = threading.Thread(target=lambda:LP(run_in_recovery, first_run))
+            thread_lp.daemon = True
+            thread_lp.start()
+        except Exception as e:
+            logger.critical(f"OF/run_lp - Ошибка при работе потока Компонента LoadProtection:\n{e}")
+            fail_start_lp += 1
+            if fail_start_lp > 3:
+                messagebox.showerror(random_string(), "Произошла фатальная ошибка при работе с потоком Компонента LoadProtection!\nПодробнее в лог-файле")
+                return
+            logger.info(f"OF/run_lp - Перезапуск LoadProtection, попытка №{fail_start_lp}...")
+            run_lp(run_in_recovery, first_run)
     else:
-        messagebox.showwarning(random_string(), "Компонент Защита Нагрузки уже запущен.")
+        messagebox.showwarning(random_string(), "Компонент Защита Нагрузки был запущен при запуске программы.")
 
 
 
 def run_obpc(run_in_recovery, first_run):
+    fail_start_obpc = 0
     if not start_obpc:
-        thread_obpc = threading.Thread(target=lambda:OBPC(run_in_recovery, first_run))
-        thread_obpc.daemon = True
-        thread_obpc.start()
+        try:
+            thread_obpc = threading.Thread(target=lambda: OBPC(run_in_recovery, first_run))
+            thread_obpc.daemon = True
+            thread_obpc.start()
+        except Exception as e:
+            logger.critical(f"OF/run_obpc - Ошибка при работе потока Компонента OnBoardPC:\n{e}")
+            fail_start_obpc += 1
+            if fail_start_obpc > 3:
+                messagebox.showerror(random_string(), "Произошла фатальная ошибка при работе с потоком Компонента OnBoardPC!\nПодробнее в лог-файле")
+                return
+            logger.info(f"OF/run_obpc - Перезапуск OnBoardPC, попытка №{fail_start_obpc}...")
+            run_lp(run_in_recovery, first_run)
     else:
-        messagebox.showwarning(random_string(), "Компонент Голосовое Управление уже запущен.")
+        messagebox.showwarning(random_string(), "Компонент Голосовое Управление был запущен при запуске программы.")
 
 
 

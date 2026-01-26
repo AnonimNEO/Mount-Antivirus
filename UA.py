@@ -5,8 +5,9 @@
 #ПРИ РАСПРОСТРАНЕНИИ ПРОГРАММЫ ВЫ ОБЯЗАНЫ ПРЕДОСТАВИТЬ ВСЕ ТЕЖЕ ПРАВА ПОЛЬЗОВАТЕЛЮ ЧТО И МЫ ВАМ, А ТАКЖЕ ЛИЦЕНЗИЯ GPL v3
 #Прочитать полную версию лицензии вы можете по ссылке Фонда Свободного Программного Обеспечения - https://www.gnu.org/licenses/gpl-3.0.html
 #Или в файле COPYING.txt в архиве с установщиком
-#Copyleft 🄯 NEO Organization, Departament K 2024 - 2025
+#Copyleft 🄯 NEO Organization, Departament K 2024 - 2026
 #Coded by @AnonimNEO (Telegram)
+
 #Обучение
 from tkinter import messagebox
 from RS import random_string
@@ -16,7 +17,7 @@ import winreg
 #Логирование
 from loguru import logger
 
-from OF import get_offline_reg_path, loaded_hive_names
+from OF2 import get_offline_reg_path, loaded_hive_names
 
 unlock_all_version = "1.1.3 Beta"
 

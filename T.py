@@ -5,8 +5,9 @@
 #ПРИ РАСПРОСТРАНЕНИИ ПРОГРАММЫ ВЫ ОБЯЗАНЫ ПРЕДОСТАВИТЬ ВСЕ ТЕЖЕ ПРАВА ПОЛЬЗОВАТЕЛЮ ЧТО И МЫ ВАМ, А ТАКЖЕ ЛИЦЕНЗИЯ GPL v3
 #Прочитать полную версию лицензии вы можете по ссылке Фонда Свободного Программного Обеспечения - https://www.gnu.org/licenses/gpl-3.0.html
 #Или в файле COPYING.txt в архиве с установщиком
-#Copyleft 🄯 NEO Organization, Departament K 2024 - 2025
+#Copyleft 🄯 NEO Organization, Departament K 2024 - 2026
 #Coded by @AnonimNEO (Telegram)
+
 #Обучение
 from tkinter import messagebox
 #Рисование иконки в трее и вставка картинок
@@ -24,6 +25,9 @@ import threading
 import time
 #Работа с файлами и ОС
 import os
+#Перезапуск
+import signal
+import sys
 
 #Глобализируем версии компонентов
 global autorun_master_version, clear_cache_version, exit_version, file_manager_version, load_protection_version, unlocker_version, on_board_pc_version, other_komponents_version, restart_version, random_string_version, run_version, scarecrow_protection_verison
@@ -41,7 +45,7 @@ from FR import FR, file_replacer_version
 from LP import LP, load_protection_version
 from MU import MU, unlocker_version
 from OBPC import OBPC, on_board_pc_version
-from OF import check_first_run, run_lp, run_obpc, open_with, get_current_disc, load_bush, unload_bush, other_komponents_version
+from OF import check_first_run, run_lp, restart_ma, open_with, get_current_disc, load_bush, unload_bush, other_komponents_version
 from PM import PM, process_manager_version
 from R import R, restart_version
 from RS import random_string, random_string_version
@@ -51,12 +55,21 @@ from SP import SP, scarecrow_protection_version
 from UA import UA, unlock_all_version
 from UM import UM, users_manager_version
 
-elevate()
+if __name__ != "__main__":
+    logger.critical("T - Попытка запуска программы как стороннего модуля!")
+    restart_ma()
+
+try:
+    elevate()
+except Exception as e:
+    admin_error = f"T - Ошибка при получении прав администратора:\n{e}"
+    logger.critical(admin_error)
+    messagebox.showerror(random_string(), admin_error)
 
 #Глобальные Переменные
 global T_log_txt, start_interface
 font_trey = "arial.ttf"
-trey_version = "2.0.8 Beta"
+trey_version = "2.1.0 Beta"
 
 if not os.path.exists(log_path):
     os.makedirs(log_path)
@@ -109,7 +122,6 @@ if first_run:
     messagebox.showinfo(random_string(), 'Похоже, что вы первый раз запустили программу, включен режим обучения (в компонентах включены подсказки).\nОн будет выключен при следующим старте программы\nЧтоб потом включить его снова найдите пункт "Включить режим обучения".')
 
 
-
 #Основная программа
 try:
     if not run_in_recovery:
@@ -155,13 +167,18 @@ try:
                 except Exception as e:
                     logger.error(f"T - Ошибка трея:\n{e}")
 
+            if run_in_recovery:
+                current_disc_r, found_disc = get_current_disc(run_in_recovery)
+            else:
+                current_disc_r = "C:\\"
+
             #Создаем выпадающий список с функциями Анлокера
             unlocker_menu = Menu(
                 MenuItem("Файловый Менеджер", lambda:FM(run_in_recovery, first_run)),
                 MenuItem("Мастер Автозагрузки", lambda:ARM(run_in_recovery, first_run)),
                 MenuItem("Замена Setch, Utilman", FR),
                 MenuItem("Менеджер Пользователей", UM),
-                MenuItem("Scarecrow Protection", lambda:SP(run_in_recovery, first_run)),
+                MenuItem("Scarecrow Protection", lambda:SP(run_in_recovery, first_run, current_disc_r)),
                 MenuItem("Запустить Очистку Temp", lambda:CC(run_in_recovery, first_run)),
                 MenuItem("Открыть с Помощью", lambda: open_with(first_run)),
                 MenuItem("Включить режим обучения", lambda: check_first_run(delete=True)),
@@ -186,23 +203,36 @@ try:
 
             if start_interface == "icon" or start_interface == "window":
                 #Запускаем иконку в трее в отдельном потоке.
-                thread_icon = threading.Thread(target=icon.run)
-                thread_icon.daemon = True #Делаем поток демоном, чтобы он завершился при выходе основной программы
-                thread_icon.start()
+                try:
+                    thread_icon = threading.Thread(target=icon.run)
+                    thread_icon.daemon = True #Делаем поток демоном, чтобы он завершился при выходе основной программы
+                    thread_icon.start()
 
-                start_icon()
+                    start_icon()
+                except Exception as e:
+                    logger.critical(f"T - Ошибка запуска иконки! Аварийный перезапуск!\n{e}")
 
             if start_obpc:
                 #Запускаем Голосовое Управление в отдельном потоке.
-                thread_obpc = threading.Thread(target=lambda:OBPC(run_in_recovery, first_run))
-                thread_obpc.daemon = True
-                thread_obpc.start()
+                try:
+                    thread_obpc = threading.Thread(target=lambda: OBPC(run_in_recovery, first_run))
+                    thread_obpc.daemon = True
+                    thread_obpc.start()
+                except Exception as e:
+                    start_obpc = False
+                    logger.critical(f"T - Ошибка при работе потока Компонента OnBoardPC:\n{e}")
+                    messagebox.showerror(random_string(), "Произошла фатальная ошибка при работе с потоком Компонента OnBoardPC!\nПодробнее в лог-файле.\n\nВы можете перезапустить Компонент через соответствующий пункт.")
 
             if start_lp:
                 #Запускаем LoadProtection в отдельном потоке.
-                thread_lp = threading.Thread(target=lambda:LP(run_in_recovery, first_run))
-                thread_lp.daemon = True
-                thread_lp.start()
+                try:
+                    thread_lp = threading.Thread(target=lambda: LP(run_in_recovery, first_run))
+                    thread_lp.daemon = True
+                    thread_lp.start()
+                except Exception as e:
+                    start_lp = False
+                    logger.critical(f"OF/run_lp - Ошибка при работе потока Компонента LoadProtection:\n{e}")
+                    messagebox.showerror(random_string(), "Произошла фатальная ошибка при работе с потоком Компонента LoadProtection!\nПодробнее в лог-файле.\n\nВы можете перезапустить Компонент через соответствующий пункт.")
 
             if start_interface == "window" or start_interface == "only-windows":
                 MU(run_in_recovery, first_run)
@@ -224,3 +254,6 @@ finally:
     if run_in_recovery:
         logger.info("T - Завершение работы, выгрузка кустов реестра...")
         unload_bush()
+
+    if not run_in_recovery:
+        signal.signal(signal.SIGTERM, restart_ma)

@@ -5,7 +5,7 @@
 #ПРИ РАСПРОСТРАНЕНИИ ПРОГРАММЫ ВЫ ОБЯЗАНЫ ПРЕДОСТАВИТЬ ВСЕ ТЕЖЕ ПРАВА ПОЛЬЗОВАТЕЛЮ ЧТО И МЫ ВАМ, А ТАКЖЕ ЛИЦЕНЗИЯ GPL v3
 #Прочитать полную версию лицензии вы можете по ссылке Фонда Свободного Программного Обеспечения - https://www.gnu.org/licenses/gpl-3.0.html
 #Или в файле COPYING.txt в архиве с установщиком
-#Copyleft 🄯 NEO Organization, Departament K 2024 - 2025
+#Copyleft 🄯 NEO Organization, Departament K 2024 - 2026
 #Coded by @AnonimNEO (Telegram)
 
 #Интерфейс
@@ -20,29 +20,19 @@ import ast
 import os
 
 from RS import random_string
-from OF import Psutil
 from CC22 import CC22
 from config import *
 
 global load_protection_version, debug_mode, time_sleep_to_close_question, time_sleep_to_close_question2
-load_protection_version = "2.2.14 Alpha"
+load_protection_version = "2.2.15 Alpha"
 debug_mode = True
 
 def LP(run_in_recovery, first_run, debug_mode=False):
     if first_run:
         messagebox.showinfo(random_string(), "Данный Компонент не имеет графического интерфейса.\nОн работает в фоне и анализирует процессы согласно указанным параметрам, при обнаружении угроз вы получите уведомление об этом.")
-    if not run_in_recovery:
-        import psutil
-    else:
-        psutil = Psutil()
-
-    if not run_in_recovery:
-        from EC import EC, get_process_critical_status
-    else:
-        def EC(i, c, d):
-            pass
-        def get_process_critical_status(i):
-            return False
+    if run_in_recovery:
+        messagebox.showinfo(random_string(), "компонент LoadProtection не может быть запущен в среде восстановления, более того он здесь вам не нужен.")
+        return
 
     def read_data_file(file, code):
         if not os.path.exists(file):

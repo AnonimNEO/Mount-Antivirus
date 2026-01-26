@@ -5,7 +5,7 @@
 #ПРИ РАСПРОСТРАНЕНИИ ПРОГРАММЫ ВЫ ОБЯЗАНЫ ПРЕДОСТАВИТЬ ВСЕ ТЕЖЕ ПРАВА ПОЛЬЗОВАТЕЛЮ ЧТО И МЫ ВАМ, А ТАКЖЕ ЛИЦЕНЗИЯ GPL v3
 #Прочитать полную версию лицензии вы можете по ссылке Фонда Свободного Программного Обеспечения - https://www.gnu.org/licenses/gpl-3.0.html
 #Или в файле COPYING.txt в архиве с установщиком
-#Copyleft 🄯 NEO Organization, Departament K 2024 - 2025
+#Copyleft 🄯 NEO Organization, Departament K 2024 - 2026
 #Coded by @AnonimNEO (Telegram)
 
 #Интерфейс
@@ -19,18 +19,17 @@ import winreg
 import shutil
 import os
 
-from OF import get_current_disc
 from RS import random_string
 
 scarecrow_protection_version = "0.3.5 Beta"
 
-def SP(run_in_recovery, first_run):
+def SP(run_in_recovery, first_run, current_disc_r):
     if first_run:
         messagebox.showinfo(random_string(), "Данный Компонент позволяет симулировать на вашем компьютере определённое программное обеспечение, которые вирусы стилеры обходят стороной.\n\nЛучше не пытайтесь симулировать или удалять ПО которое у вас установлено, это может привести к поломке сторонней программы.")
 
     try:
         if run_in_recovery:
-            current_disc, found_disc = get_current_disc(run_in_recovery)
+            current_disc = current_disc_r
         else:
             current_disc = "C:\\"
 
