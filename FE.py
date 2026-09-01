@@ -6,7 +6,7 @@
 # Прочитать полную версию лицензии вы можете по ссылке Фонда Свободного Программного Обеспечения - https://www.gnu.org/licenses/gpl-3.0.html
 # Или в файле COPYING.txt в архиве с установщиком
 # Copyleft 🄯 NEO Organization, Departament K 2024 - 2026
-# Coded by @AnonimNEO (Telegram)
+# Coded by AnonimNEO (Github)
 
 import tkinter as tk
 from tkinter import filedialog, messagebox
@@ -23,7 +23,7 @@ from RS import RS
 from AES import AES
 from OF import pac, extract_filename_from_path, apply_global_theme, create_menubar
 
-FILE_EDITOR_VERSION = "0.3.11 Beta"
+FILE_EDITOR_VERSION = "0.3.12 Beta"
 
 class FileEditor:
     def __init__(self, FE_GUI):
@@ -164,7 +164,7 @@ class FileEditor:
             self.status_bar.config(text=f"{filename}{modified_indicator}")
         else:
             modified_indicator = " *" if self.is_modified else ""
-            self.status_bar.config(text=f"{l("new_file")}{modified_indicator}")
+            self.status_bar.config(text=f'{l("new_file")}{modified_indicator}')
 
 
 
@@ -191,7 +191,7 @@ class FileEditor:
     def load_file(self, file_path):
         try:
             if not os.path.exists(file_path):
-                messagebox.showerror(RS(), f"{l("file")} {l("not_found")}: {file_path}")
+                messagebox.showerror(RS(), f'{l("file")} {l("not_found")}: {file_path}')
                 return
 
             with open(file_path, "r", encoding="utf-8") as file:
@@ -208,7 +208,7 @@ class FileEditor:
             self.is_modified = False
             self.update_status_bar()
         except Exception as e:
-            logger.exception(f"FE - {l("error")} {l("load_file")}")
+            logger.exception(f'FE - {l("error")} {l("load_file")}')
             messagebox.showerror(RS(), str(e))
 
 
@@ -226,9 +226,9 @@ class FileEditor:
                 file.write(content)
             self.is_modified = False
             self.update_status_bar()
-            messagebox.showinfo(RS(), f"{l("file")} {l("success_saved")}!")
+            messagebox.showinfo(RS(), f'{l("file")} {l("success_saved")}!')
         except Exception as e:
-            logger.exception(f"FE - {l("error")} {l("save_file")}: {self.current_file}")
+            logger.exception(f'FE - {l("error")} {l("save_file")}: {self.current_file}')
             messagebox.showerror(RS(), str(e))
 
 
@@ -248,9 +248,9 @@ class FileEditor:
                 self.current_file = file_path
                 self.is_modified = False
                 self.update_status_bar()
-                messagebox.showinfo(RS(), f"{l("file")} {l("success_saved")}!")
+                messagebox.showinfo(RS(), f'{l("file")} {l("success_saved")}!')
             except Exception as e:
-                logger.exception(f"FE - {l("error")} {l("save_file")}: {file_path}")
+                logger.exception(f'FE - {l("error")} {l("save_file")}: {file_path}')
                 messagebox.showerror(RS(), str(e))
 
 
@@ -340,11 +340,10 @@ class FileEditor:
         else:
             self.search_panel.pack(side=tk.TOP, fill=tk.X, before=self.main_frame)
             self.search_active = True
-            self.search_var.set('')
+            self.search_var.set("")
             self.matches_positions = []
             self.current_match_index = -1
             self.clear_search_highlight()
-
 
 
 

@@ -6,7 +6,7 @@
 # Прочитать полную версию лицензии вы можете по ссылке Фонда Свободного Программного Обеспечения - https://www.gnu.org/licenses/gpl-3.0.html
 # Или в файле COPYING.txt в архиве с установщиком
 # Copyleft 🄯 NEO Organization, Departament K 2024 - 2026
-# Coded by @AnonimNEO (Telegram)
+# Coded by AnonimNEO (Github)
 
 from tkinter import messagebox
 from languages import l
@@ -104,7 +104,7 @@ except:
     def open_with():
         pass
     def pac():
-        messagebox.showerror(RS(), f"{l["pac"]} {l["not_available"]}!")
+        messagebox.showerror(RS(), f'{l["pac"]} {l["not_available"]}!')
     def apply_global_theme(a=None, b=None):
         pass
     def get_offline_reg_path(a=None, b=None):
@@ -174,7 +174,7 @@ except:
     def UM(a=None, b=None):
         pass
 
-CROWBAR_ANTIVIRUS_SCRIPTS_HANDLER_VERSION = "0.4.9 Beta"
+CROWBAR_ANTIVIRUS_SCRIPTS_HANDLER_VERSION = "0.4.10 Beta"
 
 current_theme = THEME[DEFAULT_THEME]
 
@@ -232,7 +232,7 @@ def CASH(RUN_IN_RECOVERY, DEBUG_MODE=False):
             # Был передан файл
             file_path = sys.argv[1]
             if DEBUG_MODE:
-                logger.debug(f"CASH - {l("file_transferred")}: {file_path}")
+                logger.debug(f'CASH - {l("file_transferred")}: {file_path}')
             # Получаем расширение файла
             _, file_extension = os.path.splitext(file_path)
             f_e = file_extension.lower() # Преобразуем в нижний регистр
@@ -257,7 +257,7 @@ def CASH(RUN_IN_RECOVERY, DEBUG_MODE=False):
                 config = get_script_config(code)
 
                 if DEBUG_MODE:
-                    logger.debug(f"CASH - {l("script_config")}: {config}")
+                    logger.debug(f'CASH - {l("script_config")}: {config}')
 
                 # Создаём контекст выполнения с доступными функциями программы
                 exec_globals = {
@@ -307,8 +307,8 @@ def CASH(RUN_IN_RECOVERY, DEBUG_MODE=False):
                 try:
                     exec(code, exec_globals)
                 except Exception as e:
-                    logger.exception(f"CASH - {l("exec_script_error")} {file_path}")
-                    messagebox.showerror(RS(), f"{l("exec_script_error")}:\n{e}")
+                    logger.exception(f'CASH - {l("exec_script_error")} {file_path}')
+                    messagebox.showerror(RS(), f'{l("exec_script_error")}:\n{e}')
 
                 # Используем полученную конфигурацию
                 delete_script_after_exec = config["delete_script_after_exec"]
@@ -319,16 +319,16 @@ def CASH(RUN_IN_RECOVERY, DEBUG_MODE=False):
                     try:
                         os.remove(file_path)
                         if DEBUG_MODE:
-                            logger.debug(f"CASH - {l("script_deleted")}: {file_path}")
+                            logger.debug(f'CASH - {l("script_deleted")}: {file_path}')
                     except:
-                        logger.exception(f"CASH - {l("script_deleted_error")}: {file_path}")
+                        logger.exception(f'CASH - {l("script_deleted_error")}: {file_path}')
 
                 # Выходим из цикла
                 if not enable_while:
                     break
                 # Если enable_while=True, цикл продолжится и скрипт выполнится снова
                 if not enable_while:
-                    logger.success(f"CASH - {l("execution_completed")}.")
+                    logger.success(f'CASH - {l("execution_completed")}.')
             else:
                 messagebox.showwarning(RS(), l("command_not_found_for_file"))
                 break

@@ -6,7 +6,7 @@
 # Прочитать полную версию лицензии вы можете по ссылке Фонда Свободного Программного Обеспечения - https://www.gnu.org/licenses/gpl-3.0.html
 # Или в файле COPYING.txt в архиве с установщиком
 # Copyleft 🄯 NEO Organization, Departament K 2024 - 2026
-# Coded by @AnonimNEO (Telegram)
+# Coded by AnonimNEO (Github)
 
 import tkinter as tk
 from tkinter import scrolledtext, messagebox
@@ -25,7 +25,7 @@ from languages import l
 from RS import RS
 import config
 
-CROWBAR_CONSOLE_VERSION = "0.1.8 Pre-Alpha"
+CROWBAR_CONSOLE_VERSION = "0.1.9 Pre-Alpha"
 
 class CrowbarConsole:
     """Консоль разработчика (python консоль вместе с доступом к функциям программы)"""
@@ -50,8 +50,8 @@ class CrowbarConsole:
             height=20
         )
         self.output_text.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
-        self.output_text.insert(tk.END, f"=== {l("crowbar_console")} {crowbar_console_version} ===\n")
-        self.output_text.insert(tk.END, f"{l("pac")} - {PROGRAM_AUTHENTICATION_CLYTH}\n")
+        self.output_text.insert(tk.END, f'=== {l("crowbar_console")} {crowbar_console_version} ===\n')
+        self.output_text.insert(tk.END, f'{l("pac")} - {PROGRAM_AUTHENTICATION_CLYTH}\n')
         self.output_text.insert(tk.END, l("crowbar_console_text"))
 
         self.output_text.config(state=tk.DISABLED)
@@ -84,11 +84,11 @@ class CrowbarConsole:
         if not command.strip():
             return
 
-        logger.info(f"Console - {l("attempt_command")}: {command}")
+        logger.info(f'Console - {l("attempt_command")}: {command}')
 
         if any(x in command for x in ("exit", "quit", "os._exit")):
             self.output_text.config(state=tk.NORMAL)
-            comment = f"{l("exit_with_console_text")}\n"
+            comment = f'{l("exit_with_console_text")}\n'
             logger.info(f"Console - {comment}")
             self.output_text.insert(tk.END, comment)
             self.output_text.config(state=tk.DISABLED)
@@ -124,7 +124,7 @@ class CrowbarConsole:
             self.output_text.config(state=tk.DISABLED)
 
         except Exception as e:
-            logger.exception(f"Console - {l("error")}")
+            logger.exception(f'Console - {l("error")}')
             self.output_text.config(state=tk.NORMAL)
             self.output_text.insert(tk.END, f"Error: {type(e).__name__}: {e}\n")
             self.output_text.config(state=tk.DISABLED)
@@ -140,7 +140,7 @@ class CrowbarConsole:
 def open_console(globals_dict=None, DEBUG_MODE=False):
     """Запуск консоли разработчика через капчу"""
     n = random.randint(128, 2048)
-    captcha_input = tk.simpledialog.askinteger(RS(), f"{l("enter_number")}: {n}")
+    captcha_input = tk.simpledialog.askinteger(RS(), f'{l("enter_number")}: {n}')
 
     if captcha_input == n:
         pass

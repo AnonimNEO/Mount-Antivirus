@@ -6,7 +6,7 @@
 # Прочитать полную версию лицензии вы можете по ссылке Фонда Свободного Программного Обеспечения - https://www.gnu.org/licenses/gpl-3.0.html
 # Или в файле COPYING.txt в архиве с установщиком
 # Copyleft 🄯 NEO Organization, Departament K 2024 - 2026
-# Coded by @AnonimNEO (Telegram)
+# Coded by AnonimNEO (Github)
 
 # Интерфейс
 from tkinter import ttk, messagebox, Menu, simpledialog
@@ -26,18 +26,27 @@ from languages import l
 from OF import pac, apply_global_theme, create_menubar
 from RS import RS
 
-USER_MANAGER_VERSION = "0.3.10 Beta"
+USER_MANAGER_VERSION = "0.3.12 Beta"
 
 class UserManager:
     def run_net_command(self, args):
         try:
-            subprocess.run(["net"] + args, capture_output=True, text=True, check=True, creationflags=subprocess.CREATE_NO_WINDOW)
+            result = subprocess.run(
+                ["net"] + args, 
+                capture_output=True, 
+                text=True, 
+                check=True, 
+                creationflags=subprocess.CREATE_NO_WINDOW,
+                encoding="cp1251"
+            )
             return True
         except subprocess.CalledProcessError as e:
-            logger.error(f"UM - {l("net_error")}:\n{e.stderr}")
+            # Парсим stderr в правильной кодировке
+            error_msg = e.stderr if e.stderr else str(e)
+            logger.error(f'UM - {l("net_error")}:\n{error_msg}')
             return False
         except Exception as e:
-            logger.exception(f"UM - {l("system_command_error")}.")
+            logger.exception(f'UM - {l("system_command_error")}.')
             return False
 
     def __init__(self, UM_GUI):
@@ -79,9 +88,24 @@ class UserManager:
                 "Select-Object -ExpandProperty Name\""
             )
 
-            # Выполняем команду
-            result = subprocess.check_output(cmd, shell=True, text=True, stderr=subprocess.PIPE, encoding='cp866')
-            lines = result.strip().splitlines()
+            # Выполняем команду PowerShell
+            try:
+                result = subprocess.check_output(
+                    cmd, 
+                    shell=True, 
+                    stderr=subprocess.DEVNULL,  # Игнорируем stderr вместо захвата
+                    encoding='utf-8'
+                )
+                lines = result.strip().splitlines()
+            except:
+                cmd = 'wmic useraccount where "Disabled=0 and LocalAccount=1" get Name /format:list'
+                result = subprocess.check_output(
+                    cmd, 
+                    shell=True, 
+                    stderr=subprocess.DEVNULL,
+                    encoding="cp1251"
+                )
+                lines = result.strip().splitlines()
 
             system_blacklist = [
                 "Administrator", l("admin"),
@@ -93,14 +117,19 @@ class UserManager:
             self.users = []
             for line in lines:
                 name = line.strip()
+                
+                # Если строка в формате "Name=username" (от wmic), извлеките только username
+                if "=" in name:
+                    name = name.split("=", 1)[1].strip()
+
                 if name and not any(black.lower() == name.lower() for black in system_blacklist):
                     self.users.append(name)
 
             self.update_tree()
 
         except Exception as e:
-            logger.exception(f"UM - {l("get_user_list_error")}")
-            messagebox.showerror(RS(), f"{l("get_user_list_error")}:\n{e}")
+            logger.exception(f'UM - {l("get_user_list_error")}')
+            messagebox.showerror(RS(), f'{l("get_user_list_error")}:\n{e}')
 
 
 
@@ -116,6 +145,7 @@ class UserManager:
         create_window = tk.Toplevel(self.UM_GUI)
         create_window.title(RS())
         create_window.geometry("150x150")
+        create_window.attributes("-topmost", True)
 
         tk.Label(create_window, text=l("user_name")).pack(pady=2)
         username_entry = tk.Entry(create_window)
@@ -135,11 +165,11 @@ class UserManager:
 
             try:
                 self.run_net_command(["user", username, password, "/add"])
-                logger.success(f"UM - {l("user")} {username} {l("success_create")}.")
+                logger.success(f'UM - {l("user")} {username} {l("success_create")}.')
                 self.load_users()
                 create_window.destroy()
             except Exception as e:
-                comment = f"UM - {l("create_user_error")} {username}"
+                comment = f'UM - {l("create_user_error")} {username}'
                 logger.exception(comment)
                 messagebox.showerror(RS(), comment)
 
@@ -157,13 +187,13 @@ class UserManager:
         for item in selected_items:
             username = self.tree.item(item, "values")[0]
             if username.lower() == self.current_username.lower():
-                messagebox.showwarning(RS(), f"{l("cant_delete_self")} ({username})!\n{l("what_did_you")}!")
+                messagebox.showwarning(RS(), f'{l("cant_delete_self")} ({username})!\n{l("what_did_you")}!')
                 continue
 
             if self.run_net_command(["user", username, "/delete"]):
-                logger.info(f"UM - {l("user")} {username} {l("deleted")}.")
+                logger.info(f'UM - {l("user")} {username} {l("deleted")}.')
             else:
-                comment = f"{l("delete_user_error")} {username}."
+                comment = f'{l("delete_user_error")} {username}.'
                 logger.error(f"UM - {comment}")
                 messagebox.showerror(RS(), comment)
 
@@ -192,7 +222,7 @@ class UserManager:
             new_password = password_entry.get().strip()
             
             if not new_password:
-                messagebox.showwarning(RS(), f"{l("password")} {l("not_empty")}")
+                messagebox.showwarning(RS(), f'{l("password")} {l("not_empty")}')
                 return
 
             password_dialog.destroy()
@@ -214,14 +244,14 @@ class UserManager:
 
     def _do_reset_password(self, username, new_password):
         try:
-            comment = f"{l("change_password_error")} {username}."
+            comment = f'{l("change_password_error")} {username}.'
             if self.run_net_command(["user", username, new_password]):
-                logger.info(f"UM - {l("password_for_user")} {username} {l("reset2")}.")
+                logger.info(f'UM - {l("password_for_user")} {username} {l("reset2")}.')
             else:
                 logger.error(f"UM - {comment}")
                 messagebox.showerror(RS(), comment)
         except Exception as e:
-            comment = f"{l("change_password_error")} {username}"
+            comment = f'{l("change_password_error")} {username}'
             logger.exception(f"UM - {comment}")
             messagebox.showerror(RS(), comment)
 

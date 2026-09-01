@@ -6,7 +6,7 @@
 # Прочитать полную версию лицензии вы можете по ссылке Фонда Свободного Программного Обеспечения - https://www.gnu.org/licenses/gpl-3.0.html
 # Или в файле COPYING.txt в архиве с установщиком
 # Copyleft 🄯 NEO Organization, Departament K 2024 - 2026
-# Coded by @AnonimNEO (Telegram)
+# Coded by AnonimNEO (Github)
 
 # Логирование Ошибок
 try:
@@ -22,7 +22,7 @@ import psutil
 from OF import Psutil
 from languages import l
 
-EDIT_CRITICALITY_VERSION = "0.4.9 Beta"
+EDIT_CRITICALITY_VERSION = "0.4.10 Beta"
 
 # Загрузка необходимых библиотек windows
 KERNEL32 = ctypes.WinDLL("kernel32", use_last_error=True)
@@ -77,7 +77,7 @@ def get_process_critical_status(process_id, DEBUG_MODE=False):
         if not process_handle:
             error_code = ctypes.get_last_error()
             if DEBUG_MODE:
-                logger.error(f"EC - {l("open_process_error")} (pid: {process_id}). {l("error_code")}: {error_code}")
+                logger.error(f'EC - {l("open_process_error")} (pid: {process_id}). {l("error_code")}: {error_code}')
             return None
 
         # Переменная для хранения результата
@@ -90,14 +90,14 @@ def get_process_critical_status(process_id, DEBUG_MODE=False):
         if result == STATUS_SUCCESS:
             is_critical = bool(critical_value.value)
             if DEBUG_MODE:
-                logger.info(f"EC - {l("process")} (pid: {process_id}) {l("criticality_status")}: {is_critical}")
+                logger.info(f'EC - {l("process")} (pid: {process_id}) {l("criticality_status")}: {is_critical}')
             return is_critical
         else:
-            logger.error(f"EC - {l("query_critical_error")}. {l("error_code")}: {hex(result)}")
+            logger.error(f'EC - {l("query_critical_error")}. {l("error_code")}: {hex(result)}')
             return None
 
     except:
-        logger.exception(f"EC - {l("get_critical_unknown_error")}")
+        logger.exception(f'EC - {l("get_critical_unknown_error")}')
         return None
     finally:
         if process_handle:
@@ -116,7 +116,7 @@ def set_process_critical(process_id, critical):
         if not process_handle:
             error_code = ctypes.get_last_error()
             process_name = get_process_name(process_id)
-            logger.error(f"EC - {l("open_process_error")} {process_name} (pid: {process_id}). {l("error_code")}: {error_code}")
+            logger.error(f'EC - {l("open_process_error")} {process_name} (pid: {process_id}). {l("error_code")}: {error_code}')
             return False
 
         # Значение 1 для True (критический), 0 для False (некритический)
@@ -127,14 +127,14 @@ def set_process_critical(process_id, critical):
 
         if result == STATUS_SUCCESS:
             status = l("installed") if critical else l("removed")
-            logger.success(f"EC - {l("process_critical")} {process_id} {status} ({l("target")}: {critical})")
+            logger.success(f'EC - {l("process_critical")} {process_id} {status} ({l("target")}: {critical})')
             return True
         else:
-            logger.error(f"EC - {l("edit_critical_error")}. {l("error_code")}: {hex(result)}")
+            logger.error(f'EC - {l("edit_critical_error")}. {l("error_code")}: {hex(result)}')
             return False
 
     except:
-        logger.exception(f"EC - {l("edit_critical_unknown_error")}")
+        logger.exception(f'EC - {l("edit_critical_unknown_error")}')
         return False
     finally:
         if process_handle:
@@ -155,7 +155,7 @@ def EC(process_id, critical=None, DEBUG_MODE=False):
 
         if not psutil.pid_exists(process_id):
             if DEBUG_MODE:
-                logger.debug(f"EC - {l("process")} {process_name} (pid: {process_id}) {l("not_found")}!")
+                logger.debug(f'EC - {l("process")} {process_name} (pid: {process_id}) {l("not_found")}!')
             return None
 
         # Если critical=None, только считываем статус
@@ -169,15 +169,15 @@ def EC(process_id, critical=None, DEBUG_MODE=False):
             verified_status = get_process_critical_status(process_id)
 
             if verified_status == critical:
-                logger.success(f"EC - {l("criticality_status")} {process_name} (pid: {process_id}) {l("changed_to")} {critical}")
+                logger.success(f'EC - {l("criticality_status")} {process_name} (pid: {process_id}) {l("changed_to")} {critical}')
                 return True
             else:
-                logger.warning(f"EC - {l("criticality_status")} {process_name} (pid: {process_id}) {l("change_verify_failed")}")
+                logger.warning(f'EC - {l("criticality_status")} {process_name} (pid: {process_id}) {l("change_verify_failed")}')
                 return False
         else:
-            logger.error(f"EC - {l("criticality_status")} {process_name} (pid: {process_id}) {l("no_changed")}")
+            logger.error(f'EC - {l("criticality_status")} {process_name} (pid: {process_id}) {l("no_changed")}')
             return False
 
     except:
-        logger.exception(f"{l("ec_critical_error")}")
+        logger.exception(f'{l("ec_critical_error")}')
         return None

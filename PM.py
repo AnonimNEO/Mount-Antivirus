@@ -6,7 +6,7 @@
 # Прочитать полную версию лицензии вы можете по ссылке Фонда Свободного Программного Обеспечения - https://www.gnu.org/licenses/gpl-3.0.html
 # Или в файле COPYING.txt в архиве с установщиком
 # Copyleft 🄯 NEO Organization, Departament K 2024 - 2026
-# Coded by @AnonimNEO (Telegram)
+# Coded by AnonimNEO (Github)
 
 from languages import l
 # Логирование
@@ -30,7 +30,7 @@ except:
     from OF import Psutil
     psutil = Psutil()
 
-PROCESS_MANAGER_VERSION = "1.9.7 Beta"
+PROCESS_MANAGER_VERSION = "1.9.8 Beta"
 
 # Действие с процессами
 def action_process(PM_GUI_ELEMENTS=False, action="suspend", process_ids=None, RUN_IN_RECOVERY=False, DEBUG_MODE=False):
@@ -78,7 +78,7 @@ def action_process(PM_GUI_ELEMENTS=False, action="suspend", process_ids=None, RU
         except (psutil.NoSuchProcess, psutil.AccessDenied):
             continue
         except:
-            logger.exception(f"PM - {l("at")} {action} PID {pid}")
+            logger.exception(f'PM - {l("at")} {action} PID {pid}')
 
     # Обновляем таблицу один раз после обработки всех процессов
     if PM_GUI_ELEMENTS:
@@ -114,7 +114,7 @@ def action_process_by_name(name, action="suspend", DEBUG_MODE=False):
         except (psutil.NoSuchProcess, psutil.AccessDenied):
             continue
         except:
-            logger.exception(f"ARM/PM - {l("action_error")} {action}")
+            logger.exception(f'ARM/PM - {l("action_error")} {action}')
 
 
 
@@ -134,7 +134,7 @@ def kill_delete_process(PID, PM_GUI_ELEMENTS=False):
     try:
         proces.wait(timeout=3) # Ждёт максимум 3 секунды
     except psutil.TimeoutExpired:
-        comment = f"PM - {l("process")} {process_name} ({PID[0]}) {l("process_dont_close")}"
+        comment = f'PM - {l("process")} {process_name} ({PID[0]}) {l("process_dont_close")}'
         logger.error(comment)
         messagebox.showerror(RS(), comment)
     delete_file(process_file)
@@ -146,20 +146,20 @@ def show_context_menu(event, PM_GUI_ELEMENTS, selected_pids):
     menu = tk.Menu(manager, tearoff=0)
 
     count = len(selected_pids)
-    suffix = f" ({count} {l("things")}.)" if count > 1 else ""
+    suffix = f' ({count} {l("things")}.)' if count > 1 else ""
 
     if selected_pids:
         # Стандартные действия
-        menu.add_command(label=f"{l("kill_processes")} {suffix}",
+        menu.add_command(label=f'{l("kill_processes")} {suffix}',
                          command=lambda: action_process(PM_GUI_ELEMENTS, "kill", selected_pids, DEBUG_MODE))
-        menu.add_command(label=f"{l("suspend")} {suffix}",
+        menu.add_command(label=f'{l("suspend")} {suffix}',
                          command=lambda: action_process(PM_GUI_ELEMENTS, "suspend", selected_pids, DEBUG_MODE))
-        menu.add_command(label=f"{l("resume")} {suffix}",
+        menu.add_command(label=f'{l("resume")} {suffix}',
                          command=lambda: action_process(PM_GUI_ELEMENTS, "resume", selected_pids, DEBUG_MODE))
         menu.add_separator()
-        menu.add_command(label=f"{l("make_it_critical")} {suffix}",
+        menu.add_command(label=f'{l("make_it_critical")} {suffix}',
                          command=lambda: action_process(PM_GUI_ELEMENTS, "edit_critical_to_true", selected_pids, DEBUG_MODE))
-        menu.add_command(label=f"{l("remove_criticality")} {suffix}",
+        menu.add_command(label=f'{l("remove_criticality")} {suffix}',
                          command=lambda: action_process(PM_GUI_ELEMENTS, "edit_critical_to_false", selected_pids, DEBUG_MODE))
 
         # если выбран ровно один процесс
@@ -167,14 +167,19 @@ def show_context_menu(event, PM_GUI_ELEMENTS, selected_pids):
             menu.add_separator()
             item_values = tree.item(selected_pids[0], "values")
             file_path = item_values[2] if len(item_values) > 2 else ""
+            file_name = proc.name(selected_pids[0])
 
             menu.add_command(label=l("kill_delete_file_process"), command=lambda: kill_delete_process(int(selected_pids[0]), PM_GUI_ELEMENTS))
             menu.add_separator()
 
             if file_path and file_path != l("no_data"):
                 menu.add_command(
-                    label=f"{l("copy_path")} {l("to_file")}",
+                    label=f'{l("copy_path")} {l("to_file")}',
                     command=lambda: copy_to_clipboard(manager, file_path))
+                menu.add_command(
+                    label=l("copy_name"),
+                    command=lambda: copy_to_clipboard(manager, file_path)
+                )
 
     try:
         menu.tk_popup(event.x_root, event.y_root)
@@ -225,7 +230,7 @@ def set_treeview_columns(PM_GUI_ELEMENTS, DEBUG_MODE=False):
     PM_GUI_ELEMENTS["tree"].tag_configure("suspended", background="gray", foreground="white")
     PM_GUI_ELEMENTS["tree"].tag_configure("admin", background="orange", foreground="black")
 
-    columns = ("PID", l("process2"), f"{l("path")} {l("to_file")}", l("user2"), l("critical"), l("status"))
+    columns = ("PID", l("process2"), f'{l("path")} {l("to_file")}', l("user2"), l("critical"), l("status"))
     PM_GUI_ELEMENTS["tree"]["columns"] = columns
     PM_GUI_ELEMENTS["tree"]["show"] = "headings"
 
@@ -253,7 +258,7 @@ def sort_data(data, col, direction):
     key_map = {
         "PID": "PID",
         l("process2"): l("process2"),
-        f"{l("path")} {l("to_file")}": f"{l("path")} {l("to_file")}",
+        f'{l("path")} {l("to_file")}': f'{l("path")} {l("to_file")}',
         l("user2"): l("user2"),
         l("critical"): l("critical"),
         l("status"): l("status"),
@@ -297,7 +302,7 @@ def get_process_info(proc, DEBUG_MODE=False):
         return {
             "PID": proc.pid,
             l("process2"): proc.name(),
-            f"{l("path")} {l("to_file")}": proc.exe() if proc.exe() else l("no_data"),
+            f'{l("path")} {l("to_file")}': proc.exe() if proc.exe() else l("no_data"),
             l("user2"): proc.username() if proc.username() else l("no_data"),
             l("critical") : get_process_critical_status(proc.pid, DEBUG_MODE),
             l("status"): status,
@@ -307,7 +312,7 @@ def get_process_info(proc, DEBUG_MODE=False):
         return None
     except:
         process_name = get_process_name(proc.pid)
-        logger.exception(f"PM - {l("info_process_error")} {process_name} (pid:{proc.pid})")
+        logger.exception(f'PM - {l("info_process_error")} {process_name} (pid:{proc.pid})')
         return None
 
 def filter_data_by_search(data, query):
@@ -504,7 +509,7 @@ def PM(RUN_IN_RECOVERY=False, current_theme="dark", DEBUG_MODE=False):
         "sort_direction": "asc",
         "search_query": "",
         # Начальные значения ширины колонок
-        "column_widths": {"PID": 50, l("process2"): 150, f"{l("path")} {l("to_file")}": 250, l("critical"): 80, l("status"): 80, l("user2"): 150}
+        "column_widths": {"PID": 50, l("process2"): 150, f'{l("path")} {l("to_file")}': 250, l("critical"): 80, l("status"): 80, l("user2"): 150}
     }
 
     if not RUN_IN_RECOVERY:
@@ -627,17 +632,12 @@ def PM(RUN_IN_RECOVERY=False, current_theme="dark", DEBUG_MODE=False):
             if action:
                 action_process(PM_GUI_ELEMENTS, action, list(selected_items), RUN_IN_RECOVERY, DEBUG_MODE)
 
-        def restart_pm(user_theme):
-            global current_theme
-            current_theme = theme[user_theme]
-            apply_global_theme(PM_GUI, current_theme)
-
         PM_GUI = tk.Tk()
         PM_GUI_ELEMENTS["manager"] = PM_GUI
         PM_GUI.title(RS())
         PM_GUI.geometry("810x450")
 
-        apply_global_theme(PM_GUI, current_theme)
+        PM_GUI.after(0, lambda: apply_global_theme(PM_GUI, current_theme))
 
         create_menubar(PM_GUI, RUN_IN_RECOVERY, "PM", open_search_dialog, stop_search, PM_GUI_ELEMENTS, DEBUG_MODE=DEBUG_MODE)
 

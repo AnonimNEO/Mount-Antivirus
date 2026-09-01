@@ -6,7 +6,7 @@
 # Прочитать полную версию лицензии вы можете по ссылке Фонда Свободного Программного Обеспечения - https://www.gnu.org/licenses/gpl-3.0.html
 # Или в файле COPYING.txt в архиве с установщиком
 # Copyleft 🄯 NEO Organization, Departament K 2024 - 2026
-# Coded by @AnonimNEO (Telegram)
+# Coded by AnonimNEO (Github)
 
 # Логирование ошибок
 try:
@@ -41,14 +41,14 @@ class Run_As_Admin:
 
         # Пресеты
         self.presets = [
-            {"name": f"---{l("standard")} {l("utilities")}---", "command": ""},
+            {"name": f'---{l("standard")} {l("utilities")}---', "command": ""},
             {"name": l("regedit"), "command": "regedit.exe"},
             {"name": l("taskmgr"), "command": "taskmgr.exe"},
             {"name": l("notepad"), "command": "notepad.exe"},
             {"name": l("explorer"), "command": "explorer.exe"},
             {"name": l("cmd"), "command": "cmd.exe"},
             {"name": l("powershell"), "command": "powershell.exe"},
-            {"name": f"---{l("commands")}---", "command": ""},
+            {"name": f'---{l("commands")}---', "command": ""},
             {"name": "SFC /SCANNOW", "command": "SFC /SCANNOW"},
             {"name": l("cancel_reboot"), "command": "shutdown /a"},
             {"name": l("reboot_pc"), "command": "shutdown /r"},
@@ -130,7 +130,7 @@ class Run_As_Admin:
         log_frame = tk.Frame(self.professional_frame)
         log_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
 
-        tk.Label(log_frame, text=f"{l("error")}:").pack(anchor=tk.W)
+        tk.Label(log_frame, text=l("error")).pack(anchor=tk.W)
 
         scrollbar = tk.Scrollbar(log_frame)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
@@ -229,18 +229,18 @@ class Run_As_Admin:
             if self.is_command_or_dir(command):
                 # Это команда
                 subprocess.Popen(command, shell=True)
-                logger.info(f"Run - {l("launch")} {l("commands")}: {command}")
+                logger.info(f'Run - {l("launch")} {l("commands")}: {command}')
             else:
                 # Это путь к файлу
                 if os.path.exists(command):
                     os.startfile(command)
-                    logger.info(f"Run - {l("launch")} {l("file2")}: {command}")
+                    logger.info(f'Run - {l("launch")} {l("file2")}: {command}')
                 else:
-                    comment = f"Run - {l("not_found")} {l("file")}: {command}"
+                    comment = f'Run - {l("not_found")} {l("file")}: {command}'
                     logger.error(comment)
                     self.log(comment)
         except Exception as e:
-            comment = f"Run - {l("start_error")} {l("file2")}"
+            comment = f'Run - {l("start_error")} {l("file2")}'
             logger.error(comment)
             self.log(comment, e)
 

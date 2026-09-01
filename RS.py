@@ -6,12 +6,12 @@
 # Прочитать полную версию лицензии вы можете по ссылке Фонда Свободного Программного Обеспечения - https://www.gnu.org/licenses/gpl-3.0.html
 # Или в файле COPYING.txt в архиве с установщиком
 # Copyleft 🄯 NEO Organization, Departament K 2024 - 2026
-# Coded by @AnonimNEO (Telegram)
+# Coded by AnonimNEO (Github)
 
 import random
 import string
 
-RANDOM_STRING_VERSION = "1.0.5"
+RANDOM_STRING_VERSION = "1.0.6"
 
 def RS(type=None, dir=None):
     """
@@ -71,12 +71,12 @@ def RS(type=None, dir=None):
         return commands[n]
     elif type == "dir":
         n = random.randint(4, 12)
-        return ''.join(random.choice("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789") for i in range(n))
+        return "".join(random.choice("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789") for i in range(n))
     elif type == "file":
         n = random.randint(4, 10)
         i = random.randint(0, 6)
         file_extension = [".txt", ".exe", ".msi", ".dat", ".tmp", ".jpg", ".mkv"]
-        return fr"{dir}\{''.join(random.choice("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789") for i in range(n))}{file_extension[i]}"
+        return fr'{dir}\{"".join(random.choice("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789") for i in range(n))}{file_extension[i]}'
     elif type == "data":
         n = random.randint(256, 2048)
-        return ''.join(random.choice("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789 !@# $%^&*()") for i in range(n))
+        return "".join(random.choice("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789 !@# $%^&*()") for i in range(n))

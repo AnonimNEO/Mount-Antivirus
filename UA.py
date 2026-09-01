@@ -6,7 +6,7 @@
 # Прочитать полную версию лицензии вы можете по ссылке Фонда Свободного Программного Обеспечения - https://www.gnu.org/licenses/gpl-3.0.html
 # Или в файле COPYING.txt в архиве с установщиком
 # Copyleft 🄯 NEO Organization, Departament K 2024 - 2026
-# Coded by @AnonimNEO (Telegram)
+# Coded by AnonimNEO (Github)
 
 # Интерфейс
 from tkinter import messagebox
@@ -26,7 +26,7 @@ except:
 from OF import get_offline_reg_path, loaded_hive_names
 from languages import l
 
-UNLOCK_ALL_VERSION = "1.2.9 Beta"
+UNLOCK_ALL_VERSION = "1.2.10 Beta"
 
 # Возвращает безопасное "нулевое" значение для сброса параметра
 def get_new_value_for_type(reg_type: int) -> Tuple[Any, int]:
@@ -48,11 +48,11 @@ def restore_fonts(UA_GLOBALS, RUN_IN_RECOVERY, DEBUG_MODE=False):
         fonts_dir = r"C:\Windows\Fonts"
         registry_key = r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts"
 
-        logger.info(f"UA - {l("start_recovery_font")}...")
+        logger.info(f'UA - {l("start_recovery_font")}...')
 
         # Проверяем наличие каталога шрифтов
         if not os.path.isdir(fonts_dir):
-            logger.critical(f"UA - {l("font_dir_not_found")}: {fonts_dir}")
+            logger.critical(f'UA - {l("font_dir_not_found")}: {fonts_dir}')
             return False
 
         # Получаем корректный путь в зависимости от среды
@@ -138,17 +138,17 @@ def restore_fonts(UA_GLOBALS, RUN_IN_RECOVERY, DEBUG_MODE=False):
         except Exception as e:
             logger.exception(f'UA - {l("delete_orphan_font_error")}')
 
-        logger.info(f"UA - {l("recovery_font_complete")}: {fonts_found}, {l("restored")}: {fonts_restored}, {l("removed_orphans")}: {orphaned_count}")
+        logger.info(f'UA - {l("recovery_font_complete")}: {fonts_found}, {l("restored")}: {fonts_restored}, {l("removed_orphans")}: {orphaned_count}')
         return True
 
     except FileNotFoundError:
-        logger.critical(f"UA - {l("key_not_found")}: {registry_key}")
+        logger.critical(f'UA - {l("key_not_found")}: {registry_key}')
         return False
     except PermissionError:
-        logger.critical(f"UA - {l("permission_error")}: {registry_key}")
+        logger.critical(f'UA - {l("permission_error")}: {registry_key}')
         return False
     except Exception as e:
-        exception(f"UA - {l("recovery_font_error")}")
+        exception(f'UA - {l("recovery_font_error")}')
         return False
     finally:
         if key_handle:
@@ -222,13 +222,13 @@ def reset_reg_values(hkey_const, chapter, params, UA_GLOBALS, is_exception, RUN_
 
         return True
     except FileNotFoundError:
-        logger.warning(f"UA - {l("key_not_found")}: {hive_name}\\{chapter}")
+        logger.warning(f'UA - {l("key_not_found")}: {hive_name}\\{chapter}')
         return False
     except PermissionError:
-        logger.critical(f"UA - {l("permission_error")}: {hive_name}\\{chapter}")
+        logger.critical(f'UA - {l("permission_error")}: {hive_name}\\{chapter}')
         return False
     except Exception as e:
-        logger.exception(f"UA - {l("read_key_error")} {chapter}")
+        logger.exception(f'UA - {l("read_key_error")} {chapter}')
         return False
     finally:
         if key_handle:
@@ -268,15 +268,15 @@ def process_hosts_file(fix=False, exclude_hosts=None):
                 new_lines.append(line)
 
         if blocked_hosts:
-            logger.warning(f"UA - {l("block_detect")} hosts: {blocked_hosts}")
+            logger.warning(f'UA - {l("block_detect")} hosts: {blocked_hosts}')
             if fix:
                 # удаляем блокировки
                 with open(hosts_path, "w", encoding="utf-8") as f:
                     f.writelines(new_lines)
-                logger.info(f"UA - {l("delete_block")}: {", ".join(blocked_hosts)}")
+                logger.info(f'UA - {l("delete_block")}: {", ".join(blocked_hosts)}')
         return True
     except Exception as e:
-        logger.exception(f"UA - {l("file_error")} hosts")
+        logger.exception(f'UA - {l("file_error")} hosts')
         return False
 
 
@@ -335,17 +335,17 @@ def UA(RUN_IN_RECOVERY=False, DEBUG_MODE=False):
         ua_text = ""
         for r in restore_success:
             if r:
-                ua_text += f"{l("blocks")} {restore_text[i]}: {l("unlock")}\n"
+                ua_text += f'{l("blocks")} {restore_text[i]}: {l("unlock")}\n'
             else:
-                ua_text += f"{l("blocks")} {restore_text[i]}: {l("unlock_error")}\n"
+                ua_text += f'{l("blocks")} {restore_text[i]}: {l("unlock_error")}\n'
             i += 1
 
-        messagebox.showinfo(RS(), f"{l("au_result")}:\n{ua_text}")
+        messagebox.showinfo(RS(), f'{l("au_result")}:\n{ua_text}')
     except Exception as e:
         logger.exception(l("ua_critical_error"))
-        messagebox.showerror(RS(), f"{l("ua_critical_error")}\n{e}")
+        messagebox.showerror(RS(), f'{l("ua_critical_error")}\n{e}')
 
-    logger.info(f"UA - {l("component_work_complete")}.")
+    logger.info(f'UA - {l("component_work_complete")}.')
 
 
 
@@ -354,7 +354,7 @@ def check_and_restore_fonts_if_needed(RUN_IN_RECOVERY, DEBUG_MODE=False):
     """Проверяем есть ли закономерность в шрифтах - если да то восстанавливаем шрифты"""
     registry_key = r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts"
 
-    logger.info(f"UA - {l("check_fonts")}...")
+    logger.info(f'UA - {l("check_fonts")}...')
 
     try:
         # Инициализируем UA_GLOBALS для получения корректного пути реестра
@@ -410,7 +410,7 @@ def check_and_restore_fonts_if_needed(RUN_IN_RECOVERY, DEBUG_MODE=False):
                 unique_values = set(font_params.values())
                 if len(unique_values) == 1:
                     all_values_same = True
-                    logger.warning(f"UA - {l("all_fonts=")}")
+                    logger.warning(f'UA - {l("all_fonts=")}')
                     needs_restore = True
 
                 # Проверяем наличие .ttf или .otf файлов в реестре
@@ -421,34 +421,34 @@ def check_and_restore_fonts_if_needed(RUN_IN_RECOVERY, DEBUG_MODE=False):
                 
                 if not has_ttf_otf:
                     no_ttf_otf = True
-                    logger.warning(f"UA - {l("not_ttf_or_otf")}")
+                    logger.warning(f'UA - {l("not_ttf_or_otf")}')
                     needs_restore = True
 
             # Если проблемы обнаружены, запускаем восстановление
             if needs_restore:
-                logger.warning(f"UA - {l("font_problem_detect")}...")
+                logger.warning(f'UA - {l("font_problem_detect")}...')
                 restore_fonts(UA_GLOBALS, RUN_IN_RECOVERY, DEBUG_MODE)
                 return True
             else:
                 if DEBUG_MODE:
-                    logger.debug(f"UA - {l("restore_fonts_check_success")}")
+                    logger.debug(f'UA - {l("restore_fonts_check_success")}')
                 return False
 
         except FileNotFoundError:
-            logger.critical(f"UA - {l("key_not_found")}: {registry_key}")
+            logger.critical(f'UA - {l("key_not_found")}: {registry_key}')
             return False
         except PermissionError:
-            logger.critical(f"UA - {l("permission_error")}: {registry_key}")
+            logger.critical(f'UA - {l("permission_error")}: {registry_key}')
             return False
         except Exception as e:
-            logger.exception(f"UA - {l("check_fonts_error")}")
+            logger.exception(f'UA - {l("check_fonts_error")}')
             return False
         finally:
             if key_handle:
                 winreg.CloseKey(key_handle)
 
     except Exception as e:
-        logger.exception(f"UA - {l("check_fonts_error")}")
+        logger.exception(f'UA - {l("check_fonts_error")}')
         return False
 
 if __name__ == "__main__":

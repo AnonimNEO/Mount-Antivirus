@@ -10,6 +10,7 @@ localizations = {
         "RLP": "Защита Нагрузки",
         "ARM": "Мастер Автозагрузки",
         "B": "Браузер",
+        "CASH": "Обработчик скриптов",
         "PM": "Менеджер Процессов",
         "FM": "Файловый Менеджер",
         "UA": "Разблокировка всего",
@@ -208,6 +209,7 @@ localizations = {
         "attack": "Атака",
         "start_in_ghost_mode": "Запущено в скрытом режиме",
         "start_in_ghost_mode_error": "Ошибка при запуске в cкрытом режиме",
+        "browser_problem": "Встроенный браузер имеет проблемы и на данный момент отсутствует в программе.\nОткрыть ссылку на документацию в браузере по умолчанию?",
         # E
         "dyrachok_test_log_text": "Проверка на дурочка не прошла",
         "dyrachok_test_text": "Вы смотрите тикток!\nПрограмма не будет закрыта.",
@@ -611,6 +613,7 @@ localizations = {
         "RLP": "Load Protection",
         "ARM": "Startup Wizard",
         "B": "Browser",
+        "CASH": "Script Handler",
         "PM": "Process Manager",
         "FM": "File Manager",
         "UA": "Unlock All",
@@ -809,6 +812,7 @@ localizations = {
         "attack": "Attack",
         "start_in_ghost_mode": "Run in ghost mode",
         "start_in_ghost_mode_error": "Error starting in ghost mode",
+        "browser_problem": "The built-in browser has problems and is currently not available in the program.\nOpen the documentation link in the default browser?",
         # E
         "dyrachok_test_log_text": "Dyrachok test failed",
         "dyrachok_test_text": "You are viewing TikTok!\nThe program will not close.",
@@ -1212,6 +1216,7 @@ localizations = {
         "RLP": "Захист Навантаження",
         "ARM": "Майстер Автозавантаження",
         "B": "Браузер",
+        "CASH": "Обробник скриптів",
         "PM": "Менеджер процесів",
         "FM": "Файловий менеджер",
         "UA": "Розблокування всього",
@@ -1410,6 +1415,7 @@ localizations = {
         "attack": "Атака",
         "start_in_ghost_mode": "Запущено в прихованому режимі",
         "start_in_ghost_mode_error": "Помилка при запуску в прихованому режимі",
+        "browser_problem": "Вбудований браузер має проблеми і на даний момент відсутній у програмі.\nВідкрити посилання на документацію в браузері за замовчуванням?",
         # E
         "dyrachok_test_log_text": "Перевірка на дурня не пройшла",
         "dyrachok_test_text": "Ви дивіться тикток!\nПрограма не буде закрита.",

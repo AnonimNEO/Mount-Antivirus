@@ -6,10 +6,10 @@
 # Прочитать полную версию лицензии вы можете по ссылке Фонда Свободного Программного Обеспечения - https://www.gnu.org/licenses/gpl-3.0.html
 # Или в файле COPYING.txt в архиве с установщиком
 # Copyleft 🄯 NEO Organization, Departament K 2024 - 2026
-# Coded by @AnonimNEO (Telegram)
+# Coded by AnonimNEO (Github)
 
 # Вставка картинок
-# from PIL import Image, ImageTk
+from PIL import Image, ImageTk
 # Графический Интерфейс
 from tkinter import messagebox
 import tkinter as tk
@@ -29,8 +29,7 @@ from config import IMAGES_PATH, PROGRAM_AUTHENTICATION_CLYTH
 from languages import l
 from RS import RS
 
-#global about_program_version
-ABOUT_PROGRAM_VERSION = "0.3.9 Beta"
+ABOUT_PROGRAM_VERSION = "0.3.11 Beta"
 image_references = {}
 er = l("error")
 
@@ -74,7 +73,7 @@ def AP(AUTORUN_MASTER_VERSION=er,
             try:
                 image_files = [f for f in os.listdir(IMAGES_PATH) if f.lower().endswith((".png", ".jpg", ".jpeg", ".gif"))]
             except Exception as e:
-                logger.exception(f"AP - {l("read_dir_error")} {IMAGES_PATH}")
+                logger.exception(f'AP - {l("read_dir_error")} {IMAGES_PATH}')
                 return image_labels_container
 
             # Проверяем наличие файлов
@@ -103,48 +102,47 @@ def AP(AUTORUN_MASTER_VERSION=er,
                     image_labels_container.append(label)
 
                 except Exception as e:
-                    logger.exception(f"AP - {l("read_image_error")} {image_file}")
+                    logger.exception(f'AP - {l("read_image_error")} {image_file}')
                     continue # если одно изображение не загрузилось, продолжаем с другими
 
             return image_labels_container # Возвращаем список загруженных меток, чтобы знать, создался ли фрейм
 
-
-
         def show_component_versions(event):
             version_component_text = (
-                f"{l("version_component")}:\n"
-                f"{l("pac")}: {PROGRAM_AUTHENTICATION_CLYTH}\n"
-                f"---{l("general_component")}---\n"
-                f"{l("program_kernel")}: {TREY_VERSION}\n"
-                f"{l("ARM")}: {AUTORUN_MASTER_VERSION}\n"
-                f"{l("PM")}: {PROCESS_MANAGER_VERSION}\n"
-                f"{l("FM")}: {file_manager_version}\n"
-                f"{l("UA")}: {UNLOCK_ALL_VERSION}\n"
-                f"{l("FE")}: {FILE_EDITOR_VERSION}\n"
-                f"{l("RLP")}: {REAL_TIME_PROTECT_VERSION}\n"
-                f"{l("SIM")}: {SOFTWARE_INSTALLATION_MANAGER}\n"
-                f"{l("RM")}: {REGISTRY_MONITOR_VERSION}\n"
-                f"---{l("mini_component")}---\n"
-                f"{l("CM")}: {CROWBAR_MENU_VERSION}\n"
-                f"{l("UM")}: {USERS_MANAGER_VERSION}\n"
-                f"{l("FR")}: {FILE_REPLACER_VERSION}\n"
-                f"{l("SP")}: {SCARECROW_PROTECTION_VERSION}\n"
-                f"{l("CC")}: {CLEAR_CACHE_VERSION}\n"
-                f"{l("R")}: {RESTART_VERSION}\n"
-                f"{l("Run")}: {RUN_VERSION}\n"
-                f"{l("OBPC")}: {ON_BOARD_PC_VERSION}\n"
-                f"---{l("system_component")}---\n"
-                f"{l("encryption")}: AES\n"
-                f"{l("CASH")}: {CROWBAR_ANTIVIRUS_SCRIPTS_HANDLER_VERSION}\n"
-                f"{l("EC")}: {EDIT_CRITICALITY_VERSION}\n"
-                f"{l("GFA")}: {GET_FULL_ACCESS_VERSION}\n"
-                f"{l("OF")}: {OTHER_FUNCTION_VERSION}\n"
-                f"{l("Console")}: {CROWBAR_CONSOLE_VERSION}\n"
-                f"{l("RS")}: {RANDOM_STRING_VERSION}\n"
-                f"{l("AP")}: {ABOUT_PROGRAM_VERSION}\n"
-                f"{l("SAU")}: {SETTINGS_AND_UPDATE_VERSION}"
-                f"{l("E")}: {EXIT_VERSION}\n"
+                f'{l("version_component")}:\n'
+                f'{l("pac")}: {PROGRAM_AUTHENTICATION_CLYTH}\n'
+                f'---{l("general_component")}---\n'
+                f'{l("program_kernel")}: {TREY_VERSION}\n'
+                f'{l("ARM")}: {AUTORUN_MASTER_VERSION}\n'
+                f'{l("PM")}: {PROCESS_MANAGER_VERSION}\n'
+                f'{l("FM")}: {file_manager_version}\n'
+                f'{l("UA")}: {UNLOCK_ALL_VERSION}\n'
+                f'{l("FE")}: {FILE_EDITOR_VERSION}\n'
+                f'{l("RLP")}: {REAL_TIME_PROTECT_VERSION}\n'
+                f'{l("SIM")}: {SOFTWARE_INSTALLATION_MANAGER}\n'
+                f'{l("RM")}: {REGISTRY_MONITOR_VERSION}\n'
+                f'---{l("mini_component")}---\n'
+                f'{l("CM")}: {CROWBAR_MENU_VERSION}\n'
+                f'{l("UM")}: {USERS_MANAGER_VERSION}\n'
+                f'{l("FR")}: {FILE_REPLACER_VERSION}\n'
+                f'{l("SP")}: {SCARECROW_PROTECTION_VERSION}\n'
+                f'{l("CC")}: {CLEAR_CACHE_VERSION}\n'
+                f'{l("R")}: {RESTART_VERSION}\n'
+                f'{l("Run")}: {RUN_VERSION}\n'
+                f'{l("OBPC")}: {ON_BOARD_PC_VERSION}\n'
+                f'---{l("system_component")}---\n'
+                f'{l("encryption")}: AES\n'
+                f'{l("CASH")}: {CROWBAR_ANTIVIRUS_SCRIPTS_HANDLER_VERSION}\n'
+                f'{l("EC")}: {EDIT_CRITICALITY_VERSION}\n'
+                f'{l("GFA")}: {GET_FULL_ACCESS_VERSION}\n'
+                f'{l("OF")}: {OTHER_FUNCTION_VERSION}\n'
+                f'{l("Console")}: {CROWBAR_CONSOLE_VERSION}\n'
+                f'{l("RS")}: {RANDOM_STRING_VERSION}\n'
+                f'{l("AP")}: {ABOUT_PROGRAM_VERSION}\n'
+                f'{l("SAU")}: {SETTINGS_AND_UPDATE_VERSION}\n'
+                f'{l("E")}: {EXIT_VERSION}\n'
             )
+
             messagebox.showinfo(RS(), version_component_text)
 
 
@@ -182,7 +180,7 @@ def AP(AUTORUN_MASTER_VERSION=er,
         donationalerts_link.pack(pady=10)
         donationalerts_link.bind("<Button-1>", open_trade_on_steam)
 
-        gpl_link = tk.Label(about_window, text=f"{l("license")} GPL v3.0", bg="red", fg="white", cursor="hand2", font=("ComicSans", 16))
+        gpl_link = tk.Label(about_window, text=f'{l("license")} GPL v3.0', bg="red", fg="white", cursor="hand2", font=("ComicSans", 16))
         gpl_link.pack(pady=10)
         gpl_link.bind("<Button-1>", open_gpl_licenses)
 

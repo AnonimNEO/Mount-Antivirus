@@ -6,7 +6,7 @@
 # Прочитать полную версию лицензии вы можете по ссылке Фонда Свободного Программного Обеспечения - https://www.gnu.org/licenses/gpl-3.0.html
 # Или в файле COPYING.txt в архиве с установщиком
 # Copyleft 🄯 NEO Organization, Departament K 2024 - 2026
-# Coded by @AnonimNEO (Telegram)
+# Coded by AnonimNEO (Github)
 
 # Локализация
 from languages import l
@@ -19,7 +19,6 @@ import os
 not_loguru = False
 not_tkinter = False
 not_pillow = False
-not_elevate = False
 not_pystray = False
 not_bytesio = False
 not_multiprocessing = False
@@ -40,7 +39,7 @@ try:
 except:
     try:
         from loguru import logger
-        logger.exception(f"T - {l("import_error")} loguru+AES")
+        logger.exception(f'T - {l("import_error")} loguru+AES')
     except:
         import logging
         not_loguru = True
@@ -57,7 +56,7 @@ except:
                 # Если логгер уже имеет обработчики, не добавляем новые
                 if not self.logger.handlers:
                     handler = logging.StreamHandler(sys.stdout)
-                    formatter = logging.Formatter("%(asctime)s | %(levelname)-8s | %(message)s", datefmt="%d-%m-%Y %H:%M:%S")
+                    formatter = logging.Formatter('%(asctime)s | %(levelname)-8s | %(message)s', datefmt='%d-%m-%Y %H:%M:%S')
                     handler.setFormatter(formatter)
                     self.logger.addHandler(handler)
 
@@ -77,7 +76,7 @@ except:
                 self.logger.critical(message)
 
             def success(self, message):
-                self.logger.info(f"[SUCCESS] {message}")
+                self.logger.info(f'[SUCCESS] {message}')
 
             def exception(self, message):
                 self.logger.exception(message)
@@ -87,7 +86,7 @@ except:
 
         logger = Loggers()
 
-        logger.exception(f"T - {l("import_error")} loguru! {l("replacement_is_used")}")
+        logger.exception(f'T - {l("import_error")} loguru! {l("replacement_is_used")}')
 
 # Интерфейс
 try:
@@ -95,24 +94,17 @@ try:
     import tkinter as tk
 except:
     not_tkinter = True
-    logger.exception(f"T - {l("import_error")} tkinter")
-    with open("fatal_error.txt", "w") as f:
-        f.write(f"{l("fatal_error")} {l("in_start_crowbar")}")
-    os.startfile("fatal_error.txt")
+    logger.exception(f'T - {l("import_error")} tkinter')
+    with open('fatal_error.txt', 'w') as f:
+        f.write(f'{l("fatal_error")} {l("in_start_crowbar")}')
+    os.startfile('fatal_error.txt')
 
 try:
     # Рисование иконки в трее и вставка картинок
     from PIL import Image, ImageDraw, ImageFont
 except:
     not_pillow = True
-    logger.exception(f"T - {l("import_error")} Pillow")
-
-# Получение прав Администратора
-try:
-    from elevate import elevate
-except:
-    not_elevate = True
-    logger.exception(f"T - {l("import_error")} elevate")
+    logger.exception(f'T - {l("import_error")} Pillow')
 
 # Движок иконки в трее
 try:
@@ -120,32 +112,32 @@ try:
     import pystray
 except:
     not_pystray = True
-    logger.exception(f"T - {l("import_error")} pystray")
+    logger.exception(f'T - {l("import_error")} pystray')
 
 # Работа с потоками
 try:
     from io import BytesIO
 except:
     not_bytesio = True
-    logger.exception(f"T - {l("import_error")} BytesIO")
+    logger.exception(f'T - {l("import_error")} BytesIO')
 
 try:
     import multiprocessing
 except:
     not_multiprocessing = True
-    logger.exception(f"T - {l("import_error")} multiprocessing")
+    logger.exception(f'T - {l("import_error")} multiprocessing')
 
 try:
     import threading
 except:
     not_threading = True
-    logger.exception(f"T - {l("import_error")} threading")
+    logger.exception(f'T - {l("import_error")} threading')
 
 try:
     import signal
 except:
     not_signal = True
-    logger.exception(f"T - {l("import_error")} signal")
+    logger.exception(f'T - {l("import_error")} signal')
 
 not_ap = False
 not_arm = False
@@ -181,19 +173,19 @@ except:
     not_cc2 = True
     def AES(a=None, b=None, c=None):
         return "error"
-    logger.exception(f"T - {l("component_import_error")} AES")
+    logger.exception(f'T - {l("component_import_error")} AES')
 
 try:
     from AP import AP
 except:
     not_ap = True
-    logger.exception(f"T - {l("component_import_error")} AboutImage")
+    logger.exception(f'T - {l("component_import_error")} AboutImage')
 
 try:
     from ARM import ARM, AUTORUN_MASTER_VERSION
 except:
     not_arm = True
-    logger.exception(f"T - {l("component_import_error")} AutoRunMaster")
+    logger.exception(f'T - {l("component_import_error")} AutoRunMaster')
 
 try:
     from RS import RS, RANDOM_STRING_VERSION
@@ -201,7 +193,7 @@ except:
     def RS(a=None):
         return "error"
     not_rs = True
-    logger.exception(f"T - {l("component_import_error")} RandomString")
+    logger.exception(f'T - {l("component_import_error")} RandomString')
 
 # try:
 #     from B import B, browser_version
@@ -215,14 +207,14 @@ try:
     from CC import CC, CLEAR_CACHE_VERSION
 except:
     not_cc = True
-    logger.exception(f"T - {l("component_import_error")} ClearCache")
+    logger.exception(f'T - {l("component_import_error")} ClearCache')
 
 try:
     from config import LOG_PATH, T_LOG_TXT, THEME, DEFAULT_THEME, PROGRAM_AUTHENTICATION_CLYTH, START_INTERFACE, START_CASH, START_LP, DOCUMENTATION_HTML
     import config
 except:
     not_config = True
-    logger.exception(f"T - {l("import_error")} config!")
+    logger.exception(f'T - {l("import_error")} config!')
 
 try:
     from E import E, EXIT_VERSION
@@ -230,7 +222,7 @@ except:
     not_e = True
     def E():
         pass
-    logger.exception(f"T - {l("component_import_error")} Exit")
+    logger.exception(f'T - {l("component_import_error")} Exit')
 
 try:
     from EC import EC, EDIT_CRITICALITY_VERSION
@@ -238,38 +230,38 @@ except:
     not_ec = True
     def EC():
         pass
-    logger.exception(f"T - {l("component_import_error")} EditCritical")
+    logger.exception(f'T - {l("component_import_error")} EditCritical')
 
 try:
     from FE import FE, FILE_EDITOR_VERSION
 except:
     not_fe = True
-    logger.exception(f"T - {l("component_import_error")} FileEditor")
+    logger.exception(f'T - {l("component_import_error")} FileEditor')
 
 try:
     from FM import FM, FILE_MANAGER_VERSION
 except:
     not_fm = True
-    logger.critical(f"T - {l("component_import_error")} FileManager")
+    logger.critical(f'T - {l("component_import_error")} FileManager')
 
 try:
     from FR import FR, FILE_REPLACER_VERSION
 except:
     not_fr = True
-    logger.exception(f"T - {l("component_import_error")} FileReplacer")
+    logger.exception(f'T - {l("component_import_error")} FileReplacer')
 
 try:
     from GFA import GFA, GET_FULL_ACCESS_VERSION
 except:
     def GFA():
         pass
-    logger.exception(f"T - {l("component_import_error")} GetFullAccess")
+    logger.exception(f'T - {l("component_import_error")} GetFullAccess')
 
 try:
     from RLP import RLP, REAL_TIME_PROTECT_VERSION
 except:
     not_rlp = True
-    logger.exception(f"T - {l("component_import_error")} RealTimeProtection")
+    logger.exception(f'T - {l("component_import_error")} RealTimeProtection')
 
 try:
     from CM import CM, CROWBAR_MENU_VERSION
@@ -278,7 +270,7 @@ except:
     crowbar_menu_version = "error"
     def CM(a=None, b=None, c=None):
         pass
-    logger.exception(f"T - {l("component_import_error")} MountUnlocker")
+    logger.exception(f'T - {l("component_import_error")} MountUnlocker')
 
 try:
     from OF import pac, apply_global_theme, get_offline_reg_path, Psutil, run_component, run_component_process, get_user_name, restart_ca, reg_file, run_command, open_with, get_current_disc, load_bush, unload_bush, enable_debug_mode, OTHER_FUNCTION_VERSION, decoy_mode, extract_filename_from_path, launch_ghost, documentation
@@ -292,7 +284,7 @@ except:
     def enable_debug_mode():
         pass
     def pac():
-        messagebox.showerror(RS(), f"{l("pac")} {l("not_available")}!")
+        messagebox.showerror(RS(), f'{l("pac")} {l("not_available")}!')
     #def CMD():
     #    pass
     def decoy_mode(a=None, b=None):
@@ -303,13 +295,13 @@ except:
         pass
     def documentation():
         pass
-    logger.exception(f"T - {l("component_import_error")} OtherFunction")
+    logger.exception(f'T - {l("component_import_error")} OtherFunction')
 
 try:
     from PM import PM, PROCESS_MANAGER_VERSION
 except:
     not_pm = True
-    logger.exception(f"T - {l("component_import_error")} ProcessManager")
+    logger.exception(f'T - {l("component_import_error")} ProcessManager')
 
 try:
     from R import R, RESTART_VERSION
@@ -317,25 +309,25 @@ except:
     not_r = True
     def R():
         pass
-    logger.exception(f"T - {l("component_import_error")} Restart")
+    logger.exception(f'T - {l("component_import_error")} Restart')
 
 try:
     from Run import Run, RUN_VERSION
 except:
     not_run = True
-    logger.exception(f"T - {l("component_import_error")} Run")
+    logger.exception(f'T - {l("component_import_error")} Run')
 
 try:
     from SAU import SAU, SETTINGS_AND_UPDATE_VERSION
 except:
     not_sau = True
-    logger.exception(f"T - {l("component_import_error")} SettingsAndUpdate")
+    logger.exception(f'T - {l("component_import_error")} SettingsAndUpdate')
 
 try:
     from SP import SP, SCARECROW_PROTECTION_VERSION
 except:
     not_sp = True
-    logger.exception(f"T - {l("component_import_error")} ScarecrowProtection")
+    logger.exception(f'T - {l("component_import_error")} ScarecrowProtection')
 
 try:
     from UA import UA, check_and_restore_fonts_if_needed, UNLOCK_ALL_VERSION
@@ -343,124 +335,77 @@ except:
     not_ua = True
     def check_and_restore_fonts_if_needed(a=None, b=None):
         pass
-    logger.exception(f"T - {l("component_import_error")} UnlockAll")
+    logger.exception(f'T - {l("component_import_error")} UnlockAll')
 
 try:
     from UM import UM, USER_MANAGER_VERSION
 except:
     not_um = True
-    logger.exception(f"T - {l("component_import_error")} UserManager")
+    logger.exception(f'T - {l("component_import_error")} UserManager')
 
 try:
     from SIM import SIM, SOFTWARE_INSTALLATION_MANAGER
 except:
     nor_sim = True
-    logger.exception(f"T - {l("component_import_error")} SoftwareInstallationManager")
+    logger.exception(f'T - {l("component_import_error")} SoftwareInstallationManager')
 
 try:
     from RM import REGISTRY_MONITOR_VERSION
 except:
     not_rm = True
-    logger.exception(f"T - {l("component_import_error")} RegistryMonitor")
+    logger.exception(f'T - {l("component_import_error")} RegistryMonitor')
 
 # Импорт консоли разработчика
 try:
     from Console import open_console, CROWBAR_CONSOLE_VERSION
 except:
     not_console = True
-    logger.exception(f"T - {l("component_import_error")} Console")
+    logger.exception(f'T - {l("component_import_error")} Console')
 
 # Импорт движка скриптов
 try:
     from CASH import CASH, CROWBAR_ANTIVIRUS_SCRIPTS_HANDLER_VERSION
 except:
     not_cash = True
-    logger.exception(f"T - {l("component_import_error")} CASH")
+    logger.exception(f'T - {l("component_import_error")} CASH')
 
 try:
     if not_pystray and not_cm:
-        broken_components = []
         c = l("component")
         li = l("library")
         na = l("not_available")
         na2 = l("not_available2")
 
-        if not_ap:
-            broken_components.append(f"{c} AP: {na}")
-        if not_arm:
-            broken_components.append(f"{c} ARM: {na}")
-        if not_b:
-            broken_components.append(f"{c} B: {na}")
-        if not_cc:
-            broken_components.append(f"{c} CC: {na}")
-        if not_e:
-            broken_components.append(f"{c} E: {na}")
-        if not_ec:
-            broken_components.append(f"{c} EC: {na}")
-        if not_fm:
-            broken_components.append(f"{c} FM: {na}")
-        if not_fr:
-            broken_components.append(f"{c} FR: {na}")
-        if not_rlp:
-            broken_components.append(f"{c} RLP: {na}")
-        if not_cm:
-            broken_components.append(f"{c} CM: {na}")
-        if not_of:
-            broken_components.append(f"{c} OF: {na}")
-        if not_pm:
-            broken_components.append(f"{c} PM: {na}")
-        if not_r:
-            broken_components.append(f"{c} R: {na}")
-        if not_rs:
-            broken_components.append(f"{c} RS: {na}")
-        if not_run:
-            broken_components.append(f"{c} Run: {na}")
-        if not_sau:
-            broken_components.append(f"{c} SAU: {na}")
-        if not_sp:
-            broken_components.append(f"{c} SP: {na}")
-        if not_ua:
-            broken_components.append(f"{c} UA: {na}")
-        if not_um:
-            broken_components.append(f"{c} UM: {na}")
-        if not_console:
-            broken_components.append(f"{c} Console: {na}")
-        if not_cash:
-            broken_components.append(f"{c} CASH: {na}")
-        if not_sim:
-            broken_components.append(f"{c} SIM: {na}")
-        if not_rm:
-            broken_components.append(f"{c} RM: {na}")
-        if not_loguru:
-            broken_components.append(f"{li} loguru: {na2}")
-        if not_tkinter:
-            broken_components.append(f"{li} tkinter: {na2}")
-        if not_pillow:
-            broken_components.append(f"{li} pillow: {na2}")
-        if not_elevate:
-            broken_components.append(f"{li} elevate: {na2}")
-        if not_pystray:
-            broken_components.append(f"{li} pystray: {na2}")
-        if not_bytesio:
-            broken_components.append(f"{li} bytesio: {na2}")
-        if not_multiprocessing:
-            broken_components.append(f"{li} multiprocessing: {na2}")
-        if not_threading:
-            broken_components.append(f"{li} threading: {na2}")
-        if not_signal:
-            broken_components.append(f"{li} signal: {na2}")
+        components = {
+            "AP": not_ap, "ARM": not_arm, "B": not_b, "CC": not_cc,
+            "E": not_e, "EC": not_ec, "FM": not_fm, "FR": not_fr,
+            "RLP": not_rlp, "CM": not_cm, "OF": not_of, "PM": not_pm,
+            "R": not_r, "RS": not_rs, "Run": not_run, "SAU": not_sau,
+            "SP": not_sp, "UA": not_ua, "UM": not_um, "Console": not_console,
+            "CASH": not_cash, "SIM": not_sim, "RM": not_rm,
+        }
+
+        libraries = {
+            "loguru": not_loguru, "tkinter": not_tkinter, "pillow": not_pillow, "pystray": not_pystray,
+            "bytesio": not_bytesio, "multiprocessing": not_multiprocessing, "threading": not_threading, "signal": not_signal,
+        }
+
+        broken_components = (
+                [f"{c} {name}: {na}" for name, status in components.items() if status] +
+                [f"{li} {name}: {na2}" for name, status in libraries.items() if status]
+        )
 
         critical_error = (
-            f"{l("critical_fail_detect")}.\n"
-            f"{l("damage")}:\n" +
-            "\n".join(broken_components)
+                f'{l("critical_fail_detect")}.\n'
+                f'{l("damage")}:\n' +
+                "\n".join(broken_components)
         )
         messagebox.showerror(RS(), critical_error)
 except:
-    logger.exception(f"T - {l("checking_damage_error")}")
+    logger.exception(f'T - {l("checking_damage_error")}')
 
 global DEBUG_MODE
-TREY_VERSION = "2.4.25 Beta"
+TREY_VERSION = "2.4.27 Beta"
 ON_BOARD_PC_VERSION = l("not_stable")
 DEBUG_MODE = False
 
@@ -479,23 +424,23 @@ def Crowbar():
         try:
             RUN_IN_RECOVERY = check_is_recovery()
             if RUN_IN_RECOVERY:
-                logger.warning(f"T - {l("RUN_IN_RECOVERY")}")
+                logger.warning(f'T - {l("RUN_IN_RECOVERY")}')
             else:
-                logger.info(f"T - {l("run_in_normal")}")
+                logger.info(f'T - {l("run_in_normal")}')
         except:
             RUN_IN_RECOVERY = True
-            logger.exception(f"T - {l("environment_error")}")
+            logger.exception(f'T - {l("environment_error")}')
 
         if RUN_IN_RECOVERY:
             current_disc, found_disc = get_current_disc(RUN_IN_RECOVERY)
             if found_disc:
-                logger.info(f"T - {l("load_bush")} {current_disc}...")
+                logger.info(f'T - {l("load_bush")} {current_disc}...')
                 load_bush(current_disc)
 
     except:
-        comment = f"T -{l("runtime_error")}"
+        comment = f'T - {l("runtime_error")}'
         logger.exception(comment)
-        messagebox.showerror(RS(), f"{comment}:\n{e}")
+        messagebox.showerror(RS(), f'{comment}:\n{e}')
 
     check_and_restore_fonts_if_needed(RUN_IN_RECOVERY, DEBUG_MODE)
 
@@ -519,7 +464,7 @@ def Crowbar():
 
                     if font is None:
                         font = ImageFont.load_default()
-                        logger.warning(f"T - {l("use_default_font")}.")
+                        logger.warning(f'T - {l("use_default_font")}.')
 
                     text = "=]"
                     text_bbox = square.textbbox((0, 0), text, font=font)
@@ -542,7 +487,7 @@ def Crowbar():
                     try:
                         icon.visible = True
                     except:
-                        logger.exception(f"T - {l("trey_error")}")
+                        logger.exception(f'T - {l("trey_error")}')
 
                 if RUN_IN_RECOVERY:
                     current_disc_r, found_disc = get_current_disc(RUN_IN_RECOVERY)
@@ -552,7 +497,7 @@ def Crowbar():
                 # Создаём меню в зависимости от условия доступности компонента
                 def create_menu_item(condition, enabled_text, enabled_func, component_name):
                     if condition:
-                        disabled_text = f"[!] {l("component")} {component_name} {l("not_available")}."
+                        disabled_text = f'[!] {l("component")} {component_name} {l("not_available")}.'
                         return MenuItem(disabled_text, lambda: None)
                     else:
                         return MenuItem(enabled_text, enabled_func)
@@ -569,12 +514,12 @@ def Crowbar():
                     create_menu_item(not_um, l("UM"), lambda: run_component(UM, current_theme, DEBUG_MODE), "UM"),
                     create_menu_item(not_fe, l("FE"), lambda: run_component(FE, None, current_theme), "FE"),
                     # create_menu_item(not_b, l("B"), lambda: run_component(B, RUN_IN_RECOVERY), "B"),
-                    create_menu_item(not_sp, l("SP"),lambda: run_component(SP, RUN_IN_RECOVERY, current_disc_r, current_theme, DEBUG_MODE), "SP"),
+                    create_menu_item(not_sp, l("SP"), lambda: run_component(SP, RUN_IN_RECOVERY, current_disc_r, current_theme, DEBUG_MODE), "SP"),
                     create_menu_item(not_cc, l("CC"), lambda: run_component(CC, RUN_IN_RECOVERY), "CC"),
                 ]
 
                 if DEBUG_MODE:
-                    menu_items.append(
+                    menu_items.extend([
                         create_menu_item(not_sim, l("SIM"), lambda: run_component(SIM, RUN_IN_RECOVERY, current_theme, DEBUG_MODE), "SIM"),
                         create_menu_item(not_rlp, l("RLP"), lambda: run_component(RLP, RUN_IN_RECOVERY), "RLP"),
                         create_menu_item(not_console, l("Console"), lambda: open_console({
@@ -620,12 +565,12 @@ def Crowbar():
                             "UM": UM,
                             "logger": logger,
                         }, DEBUG_MODE), "Console"),
-                    )
+                    ])
 
                 menu_items.extend([
                     #create_menu_item(not_of, "CMD", lambda: run_component(CMD), "OF"),
                     create_menu_item(not_of, l("open_with"), open_with, "OF"),
-                    create_menu_item(not_of, l("enable_debug_mode"), t_enable_debug_mode, "OF"),
+                    create_menu_item(not_of, l("enable_debug_mode"), t_enable_debug_mode, 'OF'),
                     create_menu_item(not_r, l("R"), R, "R")
                 ])
 
@@ -635,7 +580,7 @@ def Crowbar():
                 image = create_image(20, 20)
                 del(_icon_buffer)
                 menu = Menu(
-                    create_menu_item(not_cm, f"{l("open")} {l("CM")}", lambda: run_component(CM, RUN_IN_RECOVERY, current_theme, DEBUG_MODE), "CM"),
+                    create_menu_item(not_cm, f'{l("open")} {l("CM")}', lambda: run_component(CM, RUN_IN_RECOVERY, current_theme, DEBUG_MODE), "CM"),
                     MenuItem(l("utilities"), unlocker_menu),
                     create_menu_item(not_ua, l("UA"), lambda: UA(RUN_IN_RECOVERY, DEBUG_MODE), "UA"),
                     create_menu_item(not_run, l("Run"), lambda: run_component_process(Run, current_theme), "Run"),
@@ -669,7 +614,7 @@ def Crowbar():
                     # create_menu_item(not_b, l("documentation"), lambda: run_component(B, documentation_html), "B"),
                     create_menu_item(not_tkinter, l("documentation"), documentation, "B"),
                     create_menu_item(not_sau, l("SAU"), lambda: run_component(SAU, current_theme), "SAU"),
-                    create_menu_item(not_config, f"{l("pac")} - {PROGRAM_AUTHENTICATION_CLYTH}", pac, "config"),
+                    create_menu_item(not_config, f'{l("pac")} - {PROGRAM_AUTHENTICATION_CLYTH}', pac, "config"),
                     create_menu_item(not_e, l("E"), E, "Exit")
                 )
 
@@ -683,7 +628,7 @@ def Crowbar():
 
                         start_icon()
                     except:
-                        logger.exception(f"T - {l("icon_start_error")}!")
+                        logger.exception(f'T - {l("icon_start_error")}!')
                 if START_LP:
                     run_component(RLP)
 
@@ -695,12 +640,12 @@ def Crowbar():
                         cash_thread = threading.Thread(target=CASH, args=(RUN_IN_RECOVERY, DEBUG_MODE), daemon=True)
                         cash_thread.start()
                     except:
-                        logger.exception(f"T - {l("start_cash_error")}!")
+                        logger.exception(f'T - {l("start_cash_error")}!')
 
                 while True:
                     time.sleep(1)
             except:
-                logger.exception(f"T - {l("icon_start_error")}!")
+                logger.exception(f'T - {l("icon_start_error")}!')
                 CM(RUN_IN_RECOVERY, current_theme, current_disc)
 
         if RUN_IN_RECOVERY:
@@ -711,7 +656,7 @@ def Crowbar():
         CM(RUN_IN_RECOVERY, current_theme, current_disc)
     finally:
         if RUN_IN_RECOVERY:
-            logger.infof(f"T - {l("unload_bush")}")
+            logger.info(f'T - {l("unload_bush")}')
 
         if not RUN_IN_RECOVERY:
             signal.signal(signal.SIGTERM, restart_ca)
@@ -720,21 +665,21 @@ if __name__ == "__main__":
     try:
         multiprocessing.freeze_support()
     except:
-        logger.exception(f"T - {l("multiprocessing_error")}")
+        logger.exception(f'T - {l("multiprocessing_error")}')
 
     try:
         if ctypes.windll.shell32.IsUserAnAdmin():
             try:
                 Crowbar()
             except Exception as e:
-                comment = f"T - {l("t_critical_error")}"
+                comment = f'T - {l("t_critical_error")}'
                 logger.exception(comment)
-                if messagebox.askyesno(RS(), f"{comment}:\n{e}\n\n{l("restart_program")}?"):
+                if messagebox.askyesno(RS(), f'{comment}:\n{e}\n\n{l("restart_program")}?'):
                     Crowbar()
         else:
             ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, __file__, None, 1)
     except Exception as e:
-        admin_error = f"T - {l("admin_error")}"
+        admin_error = f'T - {l("admin_error")}'
         logger.exception(admin_error)
-        messagebox.showerror(RS(), f"{admin_error}:\n{e}")
+        messagebox.showerror(RS(), f'{admin_error}:\n{e}')
         restart_ca()

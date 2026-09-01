@@ -6,7 +6,7 @@
 # Прочитать полную версию лицензии вы можете по ссылке Фонда Свободного Программного Обеспечения - https://www.gnu.org/licenses/gpl-3.0.html
 # Или в файле COPYING.txt в архиве с установщиком
 # Copyleft 🄯 NEO Organization, Departament K 2024 - 2026
-# Coded by @AnonimNEO (Telegram)
+# Coded by AnonimNEO (Github)
 
 import ctypes
 from ctypes import wintypes, c_ulong
@@ -20,7 +20,7 @@ except:
 import queue
 import winreg
 
-REGISTRY_MONITOR_VERSION = "0.2.10 Pre-Alpha"
+REGISTRY_MONITOR_VERSION = "0.2.11 Pre-Alpha"
 
 # Загрузка библиотеки
 ADVAPI32 = ctypes.WinDLL("advapi32", use_last_error=True)
@@ -334,8 +334,8 @@ class RegistryMonitor(threading.Thread):
                     if new_data.get("data") != old_data.get("data") or new_data.get("type") != old_data.get("type"):
                         full_key_path = f"{current_path}\\{key}" if current_path else key
                         changes.append(f'RM - Изменено значение: "{full_key_path}"')
-                        changes.append(f"RM - Старое: (Тип: {old_data.get("type")}) = {old_data.get("data")}")
-                        changes.append(f"RM - Новое: (Тип: {new_data.get("type")}) = {new_data.get("data")}")
+                        changes.append(f'RM - Старое: (Тип: {old_data.get("type")}) = {old_data.get("data")}')
+                        changes.append(f'RM - Новое: (Тип: {new_data.get("type")}) = {new_data.get("data")}')
 
         # Проверяем удаленные ключи и значения
         for key, old_data in old_snapshot.items():

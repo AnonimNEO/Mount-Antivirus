@@ -6,7 +6,7 @@
 # Прочитать полную версию лицензии вы можете по ссылке Фонда Свободного Программного Обеспечения - https://www.gnu.org/licenses/gpl-3.0.html
 # Или в файле COPYING.txt в архиве с установщиком
 # Copyleft 🄯 NEO Organization, Departament K 2024 - 2026
-# Coded by @AnonimNEO (Telegram)
+# Coded by AnonimNEO (Github)
 
 # Интерфейс
 from tkinter import ttk, Menu
@@ -126,7 +126,7 @@ except Exception as e:
 from config import PROGRAM_AUTHENTICATION_CLYTH
 from languages import l
 
-CROWBAR_MENU_VERSION = "2.3.17 Beta"
+CROWBAR_MENU_VERSION = "2.3.18 Beta"
 
 # @logger.catch
 def CM(RUN_IN_RECOVERY=False, current_theme="dark", DEBUG_MODE=False):
@@ -361,7 +361,7 @@ def CM(RUN_IN_RECOVERY=False, current_theme="dark", DEBUG_MODE=False):
 
         tab_control.pack(fill="both", expand=True)
 
-        copyleft_label = ttk.Label(CM_GUI, text=f"{l("CM")} {CROWBAR_MENU_VERSION}", anchor="w")
+        copyleft_label = ttk.Label(CM_GUI, text=f'{l("CM")} {CROWBAR_MENU_VERSION}', anchor="w")
         copyleft_label.pack(side="bottom", anchor="w", padx=10, pady=10)
 
         # Создаём меню

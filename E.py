@@ -6,7 +6,7 @@
 # Прочитать полную версию лицензии вы можете по ссылке Фонда Свободного Программного Обеспечения - https://www.gnu.org/licenses/gpl-3.0.html
 # Или в файле COPYING.txt в архиве с установщиком
 # Copyleft 🄯 NEO Organization, Departament K 2024 - 2026
-# Coded by @AnonimNEO (Telegram)
+# Coded by AnonimNEO (Github)
 
 # Интерфейс
 from tkinter import messagebox, simpledialog
@@ -26,7 +26,7 @@ from OF import apply_global_theme, run_component
 from config import PROGRAM_AUTHENTICATION_CLYTH
 from languages import l
 
-EXIT_VERSION = "1.1.9 Beta"
+EXIT_VERSION = "1.1.10 Beta"
 DYRACHOK_PATH = r"C:\ProgramData\dyrachok.txt"
 
 # @logger.catch
@@ -35,7 +35,7 @@ def check_access_file():
         with open(DYRACHOK_PATH, "r") as f:
             content = f.read()
         if "debil" in content:
-            logger.critical(f"E - {l("dyrachok_test_log_text")}.")
+            logger.critical(f'E - {l("dyrachok_test_log_text")}.')
             messagebox.showwarning(RS(), l("dyrachok_test_text"))
             return False
         else:
@@ -54,7 +54,7 @@ def tiktok_question():
                 f.write("debil")
             messagebox.showinfo(RS(), l("dyrachok_test_text"))
         except Exception as e:
-            comment = f"E - {l("exit_error")}"
+            comment = f'E - {l("exit_error")}'
             logger.exception(comment)
             messagebox.showerror(RS(), f"{comment}\n{e}")
             return False
@@ -71,26 +71,26 @@ def bad_capcha():
 
 def math_window():
     n = random.randint(256, 1024)
-    number_input = tk.simpledialog.askinteger(RS(), f"{l("enter_result_example")}: √({n} * {n})")
+    number_input = tk.simpledialog.askinteger(RS(), f'{l("enter_result_example")}: √({n} * {n})')
 
     if number_input == n:
         # logger.info("E - ввод примера верен.")
         tiktok_question()
     else:
-        logger.critical(f"E - {l("bad_result_example")}.")
+        logger.critical(f'E - {l("bad_result_example")}.')
         bad_capcha()
 
 
 
 def captcha_window():
     n = random.randint(256, 1024)
-    captcha_input = tk.simpledialog.askinteger(RS(), f"{l("enter_number")}: {n}")
+    captcha_input = tk.simpledialog.askinteger(RS(), f'{l("enter_number")}: {n}')
 
     if captcha_input == n:
         # logger.info("E - ввод числа верен.")
         math_window()
     else:
-        logger.critical(f"E - {l("bad_enter_number")}")
+        logger.critical(f'E - {l("bad_enter_number")}')
         bad_capcha()
 
 
@@ -107,14 +107,14 @@ def E():
         apply_global_theme(root, current_theme)
         root.withdraw()
         if check_access_file():
-            if messagebox.askyesno(RS(), f"{l("pac")} - {PROGRAM_AUTHENTICATION_CLYTH}\n\n{l("want_exit?")}"):
-                logger.info(f"E - {l("attempting_to_exit")}.")
+            if messagebox.askyesno(RS(), f'{l("pac")} - {PROGRAM_AUTHENTICATION_CLYTH}\n\n{l("want_exit?")}'):
+                logger.info(f'E - {l("attempting_to_exit")}.')
                 captcha_window()
             else:
-                logger.info(f"E - {l("cancel_exit")}.")
+                logger.info(f'E - {l("cancel_exit")}.')
         root.mainloop()
     except:
-        logger.exception(f"E - {l("e_critical_error")}")
+        logger.exception(f'E - {l("e_critical_error")}')
 
 if __name__ == "__main__":
     E()

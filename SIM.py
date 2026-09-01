@@ -6,7 +6,7 @@
 # Прочитать полную версию лицензии вы можете по ссылке Фонда Свободного Программного Обеспечения - https://www.gnu.org/licenses/gpl-3.0.html
 # Или в файле COPYING.txt в архиве с установщиком
 # Copyleft 🄯 NEO Organization, Departament K 2024 - 2026
-# Coded by @AnonimNEO (Telegram)
+# Coded by AnonimNEO (Github)
 
 import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
@@ -32,7 +32,7 @@ from languages import l
 from PM import action_process
 from RM import RegistryMonitor
 
-SOFTWARE_INSTALLATION_MANAGER = "0.1.13 Pre-Alpha"
+SOFTWARE_INSTALLATION_MANAGER = "0.1.14 Pre-Alpha"
 
 class SoftwareInstallManager:
     def __init__(self, SIM_GUI):
@@ -186,7 +186,7 @@ class SoftwareInstallManager:
 
             # Информация о выбранной программе
             self.exe_info_label = ttk.Label(control_frame, text="Программа не выбрана", style="TInstall.TLabel", font=("Default", 9, "bold"))
-            self.exe_info_label.pack(side='left', padx=5)
+            self.exe_info_label.pack(side="left", padx=5)
 
             # Кнопки управления
             btn_frame = ttk.Frame(control_frame, style="TInstall.TFrame")
@@ -245,7 +245,7 @@ class SoftwareInstallManager:
             self.in_memory_logs = [] #  Для хранения логов в памяти
 
         except Exception as e:
-            logger.exception(f"SIM - {l("error")}")
+            logger.exception(f'SIM - {l("error")}')
             messagebox.showerror(RS(), f"Не удалось создать вкладку мониторинга:\n{e}")
 
     def create_filesystem_tab(self, parent_frame):
@@ -335,7 +335,7 @@ class SoftwareInstallManager:
             self.monitored_process = subprocess.Popen([self.exe_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False, creationflags=subprocess.CREATE_NO_WINDOW)
             pid = self.monitored_process.pid
             proc = psutil.Process(pid)
-            self._add_log_entry(f">>>PID процесса: {pid}", "info", "process")
+            self._add_log_entry(f'>>>PID процесса: {pid}", "info", "process')
             self._setup_filesystem_monitoring()
             # _setup_registry_monitoring вызывается в _start_install_monitoring
 
@@ -356,7 +356,7 @@ class SoftwareInstallManager:
             self.monitoring_active = False # Останавливаем мониторинг, если файл не найден
         except Exception as e:
             logger.exception(f"SIM - Ошибка мониторинга")
-            self._add_log_entry(f">>> [!] Ошибка мониторинга:\n{e}", "error", "process")
+            self._add_log_entry(f'>>> [!] Ошибка мониторинга:\n{e}", "error", "process')
             self._update_status(f"[!] Ошибка: {e}")
         finally:
             self.monitoring_active = False
@@ -385,13 +385,13 @@ class SoftwareInstallManager:
                 self.parent = parent
             def on_created(self, event):
                 if self.parent.monitoring_active:
-                    self.parent._add_log_entry(f"📂 Создан: {event.src_path}", "file_event", "filesystem")
+                    self.parent._add_log_entry(f'📂 Создан: {event.src_path}", "file_event", "filesystem')
             def on_deleted(self, event):
                 if self.parent.monitoring_active:
-                    self.parent._add_log_entry(f"🗑 Удален: {event.src_path}", "file_event", "filesystem")
+                    self.parent._add_log_entry(f'🗑 Удален: {event.src_path}", "file_event", "filesystem')
             def on_modified(self, event):
                 if self.parent.monitoring_active and not event.is_directory:
-                    self.parent._add_log_entry(f"✏ Изменён: {event.src_path}", "file_event", "filesystem")
+                    self.parent._add_log_entry(f'✏ Изменён: {event.src_path}", "file_event", "filesystem')
         self.observer = Observer()
 
         watch_dirs = []
@@ -413,7 +413,7 @@ class SoftwareInstallManager:
     def _monitor_child_processes(self, parent_proc):
         try:
             for child in parent_proc.children(recursive=True):
-                self._add_log_entry(f">>>Подпроцесс: {child.name()} (PID: {child.pid})", "process_info", "process")
+                self._add_log_entry(f'>>>Подпроцесс: {child.name()} (PID: {child.pid})", "process_info", "process')
         except (psutil.NoSuchProcess, psutil.AccessDenied):
             pass
 
@@ -422,7 +422,7 @@ class SoftwareInstallManager:
             #  Используем net_connections() вместо connections()
             open_files = proc.open_files()
             for f in open_files:
-                self._add_log_entry(f"📄 Открыт файл: {f.path}", "file_access", "filesystem")
+                self._add_log_entry(f'📄 Открыт файл: {f.path}", "file_access", "filesystem')
         except (psutil.NoSuchProcess, psutil.AccessDenied):
             pass
 
@@ -432,7 +432,7 @@ class SoftwareInstallManager:
             connections = proc.net_connections()
             for conn in connections:
                 if conn.status == psutil.CONN_ESTABLISHED:
-                    self._add_log_entry(f"🌐 Соединение: {conn.laddr.ip}:{conn.laddr.port} -> {conn.raddr.ip}:{conn.raddr.port}", "network_activity", "network")
+                    self._add_log_entry(f'🌐 Соединение: {conn.laddr.ip}:{conn.laddr.port} -> {conn.raddr.ip}:{conn.raddr.port}", "network_activity", "network')
         except (psutil.NoSuchProcess, psutil.AccessDenied):
             pass
 
@@ -440,7 +440,7 @@ class SoftwareInstallManager:
         try:
             cpu_percent = proc.cpu_percent()
             memory_info = proc.memory_info()
-            self._add_log_entry(f"CPU: {cpu_percent}%, RAM: {memory_info.rss / 1024 / 1024:.2f} MB", "resource_usage", "resources")
+            self._add_log_entry(f'CPU: {cpu_percent}%, RAM: {memory_info.rss / 1024 / 1024:.2f} MB", "resource_usage", "resources')
         except (psutil.NoSuchProcess, psutil.AccessDenied):
             pass
 
@@ -452,7 +452,7 @@ class SoftwareInstallManager:
             try:
                 output = stdout.readline()
                 if output:
-                    self._add_log_entry(f"ℹ️ Вывод: {output.decode(errors="replace").strip()}", "process_output", "process")
+                    self._add_log_entry(f'ℹ️ Вывод: {output.decode(errors="replace").strip()}", "process_output", "process')
             except ValueError: # Обработка случая, когда процесс уже завершился
                 pass
         stderr = self.monitored_process.stderr
@@ -460,7 +460,7 @@ class SoftwareInstallManager:
             try:
                 error = stderr.readline()
                 if error:
-                    self._add_log_entry(f"[!] Ошибка: {error.decode(errors="replace").strip()}", "process_error", "process")
+                    self._add_log_entry(f'[!] Ошибка: {error.decode(errors="replace").strip()}", "process_error", "process')
             except ValueError: # Обработка случая, когда процесс уже завершился
                 pass
 

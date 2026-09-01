@@ -6,9 +6,9 @@
 # Прочитать полную версию лицензии вы можете по ссылке Фонда Свободного Программного Обеспечения - https://www.gnu.org/licenses/gpl-3.0.html
 # Или в файле COPYING.txt в архиве с установщиком
 # Copyleft 🄯 NEO Organization, Departament K 2024 - 2026
-# Coded by @AnonimNEO (Telegram)
+# Coded by AnonimNEO (Github)
 
-FILE_REPLACER_VERSION = "0.4.9 Beta"
+FILE_REPLACER_VERSION = "0.4.10 Beta"
 
 def FR(RUN_IN_RECOVERY=False, current_theme=False, DEBUG_MODE=False):
     # Интерфейс
@@ -66,7 +66,7 @@ def FR(RUN_IN_RECOVERY=False, current_theme=False, DEBUG_MODE=False):
             final_tgt = raw_target
 
         if not final_src or not os.path.exists(final_src):
-            messagebox.showerror(RS(), f"{l("file")} {l("not_found")}")
+            messagebox.showerror(RS(), f'{l("file")} {l("not_found")}')
             return
 
         try:
@@ -82,16 +82,16 @@ def FR(RUN_IN_RECOVERY=False, current_theme=False, DEBUG_MODE=False):
             backup_path = final_tgt + ".backup"
             if os.path.exists(final_tgt):
                 shutil.copy2(final_tgt, backup_path)
-                logger.info(f"FR - {l("create_backup")}: {backup_path}")
+                logger.info(f'FR - {l("create_backup")}: {backup_path}')
 
             # Копируем новый файл
             shutil.copy2(final_src, final_tgt)
-            logger.success(f"FR - {l("success")} {l("replaced")}: {final_tgt}")
-            messagebox.showinfo(RS(), f"{l("file")} {l("replaced")} {l("on_disc")} {current_disc}")
+            logger.success(f'FR - {l("success")} {l("replaced")}: {final_tgt}')
+            messagebox.showinfo(RS(), f'{l("file")} {l("replaced")} {l("on_disc")} {current_disc}')
 
         except Exception as e:
-            logger.exception(f"FR - {l("error")}")
-            messagebox.showerror(RS(), f"{l("replace_file_not_found")}:\n{e}")
+            logger.exception(f'FR - {l("error")}')
+            messagebox.showerror(RS(), f'{l("replace_file_not_found")}:\n{e}')
 
     def restore_file(target_var):
         final_tgt = target_var.get()
@@ -105,23 +105,18 @@ def FR(RUN_IN_RECOVERY=False, current_theme=False, DEBUG_MODE=False):
 
         backup_path = final_tgt + ".backup"
         if not os.path.exists(backup_path):
-            messagebox.showwarning(RS(), f"{l("backup")} {l("not_found")} {l("on_dir")}:\n{backup_path}")
+            messagebox.showwarning(RS(), f'{l("backup")} {l("not_found")} {l("on_dir")}:\n{backup_path}')
             return
 
-        if messagebox.askyesno(RS(), f"{l("restore")} {os.path.basename(final_tgt)} {l("from_backup")}?"):
+        if messagebox.askyesno(RS(), f'{l("restore")} {os.path.basename(final_tgt)} {l("from_backup")}?'):
             try:
                 # Возвращаем бэкап на место основного файла
                 shutil.move(backup_path, final_tgt)
-                logger.success(f"FR - {l("restore_from_backup")}: {final_tgt}")
-                messagebox.showinfo(RS(), f"{l("file")} {l("success")} {l("restored")}.")
+                logger.success(f'FR - {l("restore_from_backup")}: {final_tgt}')
+                messagebox.showinfo(RS(), f'{l("file")} {l("success")} {l("restored")}.')
             except Exception as e:
-                logger.exception(f"FR - {l("error")} {l("when_restoring_a_file")}")
+                logger.exception(f'FR - {l("error")} {l("when_restoring_a_file")}')
                 messagebox.showerror(RS(), str(e))
-
-    def restart_fr(user_theme):
-        global current_theme
-        current_theme = theme[user_theme]
-        apply_global_theme(FR_GUI, current_theme)
 
     FR_GUI = tk.Tk()
     FR_GUI.title(RS())
@@ -134,20 +129,20 @@ def FR(RUN_IN_RECOVERY=False, current_theme=False, DEBUG_MODE=False):
 
     presets = {
         l("your_way"): "",
-        f"Sethc ({l("sticky_keys")})": r"C:\Windows\System32\sethc.exe",
-        f"Utilman ({l("specialist_possibilities")})": r"C:\Windows\System32\utilman.exe",
-        f"Taskmgr ({l("task_manager")})": r"C:\Windows\System32\taskmgr.exe",
-        f"Explorer ({l("explorer")})": r"C:\Windows\explorer.exe"
+        f'Sethc ({l("sticky_keys")})': r"C:\Windows\System32\sethc.exe",
+        f'Utilman ({l("specialist_possibilities")})': r"C:\Windows\System32\utilman.exe",
+        f'Taskmgr ({l("task_manager")})': r"C:\Windows\System32\taskmgr.exe",
+        f'Explorer ({l("explorer")})': r"C:\Windows\explorer.exe"
     }
 
     # GUI элементы
-    tk.Label(FR_GUI, text=f"1){l("what_to_replace")}:").pack(anchor="w", padx=10, pady=(10, 0))
+    tk.Label(FR_GUI, text=f'1){l("what_to_replace")}:').pack(anchor="w", padx=10, pady=(10, 0))
     src_frame = tk.Frame(FR_GUI)
     src_frame.pack(fill="x", padx=10)
     tk.Entry(src_frame, textvariable=source_path).pack(side="left", expand=True, fill="x")
     tk.Button(src_frame, text=l("review"), command=lambda: browse_source(source_path)).pack(side="right", padx=5)
 
-    tk.Label(FR_GUI, text=f"2){l("what_are_replace")}:").pack(anchor="w", padx=10, pady=(10, 0))
+    tk.Label(FR_GUI, text=f'2){l("what_are_replace")}:').pack(anchor="w", padx=10, pady=(10, 0))
     combo_presets = ttk.Combobox(FR_GUI, values=list(presets.keys()), state="readonly")
     combo_presets.pack(fill="x", padx=10)
     combo_presets.set(l("select_preset"))

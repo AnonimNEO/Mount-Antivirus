@@ -6,7 +6,7 @@
 # Прочитать полную версию лицензии вы можете по ссылке Фонда Свободного Программного Обеспечения - https://www.gnu.org/licenses/gpl-3.0.html
 # Или в файле COPYING.txt в архиве с установщиком
 # Copyleft 🄯 NEO Organization, Departament K 2024 - 2026
-# Coded by @AnonimNEO (Telegram)
+# Coded by AnonimNEO (Github)
 
 from tkinter import messagebox
 try:
@@ -20,7 +20,7 @@ import os
 # from RS import RS
 from languages import l
 
-GET_FULL_ACCESS_VERSION = "0.4.8 Alpha"
+GET_FULL_ACCESS_VERSION = "0.4.9 Alpha"
 
 # Проверяем, является ли путь ключом реестра
 def is_registry_path(path):
@@ -38,7 +38,7 @@ def is_registry_path(path):
 # Устанавливаем полные права на файл или каталог
 def grant_file_access(path, username):
     if not os.path.exists(path):
-        logger.error(f"GFA - {l("not_dir")}: {path}")
+        logger.error(f'GFA - {l("not_dir")}: {path}')
         return False
 
     try:
@@ -46,14 +46,14 @@ def grant_file_access(path, username):
         result = subprocess.run(cmd, capture_output=True, text=True)
 
         if result.returncode == 0:
-            logger.success(f"GFA - {l("full_access_set")}: {path}")
+            logger.success(f'GFA - {l("full_access_set")}: {path}')
             return True
         else:
-            logger.error(f"GFA - {l("error")} icacls: {result.stderr}")
+            logger.error(f'GFA - {l("error")} icacls: {result.stderr}')
             return False
 
     except Exception as e:
-        logger.exception(f"GFA - {l("file_error")}")
+        logger.exception(f'GFA - {l("file_error")}')
         return False
 
 
@@ -66,7 +66,7 @@ def grant_registry_access(path, full_username):
         import winreg
         import pywintypes
     except ImportError as e:
-        logger.critical(f"GFA - {l("import_error")}!\n{e}")
+        logger.critical(f'GFA - {l("import_error")}!\n{e}')
         return False
 
     try:
@@ -95,17 +95,17 @@ def grant_registry_access(path, full_username):
         try:
             key = winreg.OpenKey(root_key, subkey_path, 0, winreg.KEY_ALL_ACCESS)
         except PermissionError:
-            logger.error(f"GFA - {l("permission_error")} {l("to_access")}: {registry_path}")
+            logger.error(f'GFA - {l("permission_error")} {l("to_access")}: {registry_path}')
             return False
         except FileNotFoundError:
-            logger.error(f"GFA - {l("key_not_found")}: {registry_path}")
+            logger.error(f'GFA - {l("key_not_found")}: {registry_path}')
             return False
 
         # Получаем SID пользователя
         try:
             sid = win32security.LookupAccountName(None, full_username)[0]
         except Exception as e:
-            logger.exception(f"GFA - {l("get_sid_error")} {full_username}")
+            logger.exception(f'GFA - {l("get_sid_error")} {full_username}')
             winreg.CloseKey(key)
             return False
 
@@ -117,7 +117,7 @@ def grant_registry_access(path, full_username):
                 win32security.DACL_SECURITY_INFORMATION
             )
         except Exception as e:
-            logger.exception(f"GFA - {l("get_description_error")}")
+            logger.exception(f'GFA - {l("get_description_error")}')
             winreg.CloseKey(key)
             return False
 
@@ -139,7 +139,7 @@ def grant_registry_access(path, full_username):
                 sid
             )
         except Exception as e:
-            logger.exception(f"GFA - {l("ace_error")}")
+            logger.exception(f'GFA - {l("ace_error")}')
             winreg.CloseKey(key)
             return False
 
@@ -156,16 +156,16 @@ def grant_registry_access(path, full_username):
                 None
             )
         except Exception as e:
-            logger.exception(f"GFA - {l("set_access_error")}")
+            logger.exception(f'GFA - {l("set_access_error")}')
             winreg.CloseKey(key)
             return False
 
-        logger.success(f"GFA - {l("success_set_full_access")}: {registry_path}")
+        logger.success(f'GFA - {l("success_set_full_access")}: {registry_path}')
         winreg.CloseKey(key)
         return True
 
     except Exception as e:
-        logger.exception(f"GFA - {l("regedit_error")}")
+        logger.exception(f'GFA - {l("regedit_error")}')
         return False
 
 
@@ -211,5 +211,5 @@ def GFA(path, RUN_IN_RECOVERY=False):
             return grant_file_access(path, username)
 
     except Exception as e:
-        logger.exception(f"GFA - {l("error")}")
+        logger.exception(f'GFA - {l("error")}')
         return False

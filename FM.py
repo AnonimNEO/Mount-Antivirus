@@ -6,9 +6,9 @@
 # Прочитать полную версию лицензии вы можете по ссылке Фонда Свободного Программного Обеспечения - https://www.gnu.org/licenses/gpl-3.0.html
 # Или в файле COPYING.txt в архиве с установщиком
 # Copyleft 🄯 NEO Organization, Departament K 2024 - 2026
-# Coded by @AnonimNEO (Telegram)
+# Coded by AnonimNEO (Github)
 
-FILE_MANAGER_VERSION = "4.11.13 Beta"
+FILE_MANAGER_VERSION = "4.11.14 Beta"
 
 def FM(RUN_IN_RECOVERY=False, current_theme="dark", DEBUG_MODE=False):
     """Главгая функция Компонента ФайловогоМенеджера (точка входа)"""
@@ -62,7 +62,7 @@ def FM(RUN_IN_RECOVERY=False, current_theme="dark", DEBUG_MODE=False):
                         "ext": ""
                     })
                 except:
-                    logger.exception(f"FM - {l("metadata_error")}")
+                    logger.exception(f'FM - {l("metadata_error")}')
 
             # Получаем список файлов/каталогов
             for item in os.listdir(path):
@@ -78,7 +78,7 @@ def FM(RUN_IN_RECOVERY=False, current_theme="dark", DEBUG_MODE=False):
                     else:
                         ext = os.path.splitext(item)[1].lower()
                         if ext:
-                            file_type = f"{ext.upper()[1:]} {l("file")}"
+                            file_type = f'{ext.upper()[1:]} {l("file")}'
                         else:
                             file_type = {l("file")}
 
@@ -94,7 +94,7 @@ def FM(RUN_IN_RECOVERY=False, current_theme="dark", DEBUG_MODE=False):
                     })
                 except (PermissionError, FileNotFoundError) as e:
                     # Пропускаем файлы, к которым нет доступа
-                    logger.warning(f"FM - {l("skip_file")}: {item_path}\n{e}")
+                    logger.warning(f'FM - {l("skip_file")}: {item_path}\n{e}')
                     continue
 
             return files_info
@@ -244,10 +244,10 @@ def FM(RUN_IN_RECOVERY=False, current_theme="dark", DEBUG_MODE=False):
                 tree.pack(side="left", fill="both", expand=True)
 
                 # Настройка колонок таблицы и сортировки
-                columns = (l("name"), l("size"), l("type"), f"{l("date")} {l("changes")}")
+                columns = (l("name"), l("size"), l("type"), f'{l("date")} {l("changes")}')
                 tree["columns"] = columns
 
-                col_widths = {l("name"): 300, l("size"): 100, l("type"): 120, f"{l("date")} {l("changes")}": 150}
+                col_widths = {l("name"): 300, l("size"): 100, l("type"): 120, f'{l("date")} {l("changes")}': 150}
 
                 tree.column("# 0", width=0, stretch=tk.NO) # Убираем колонку по умолчанию
 
@@ -270,7 +270,7 @@ def FM(RUN_IN_RECOVERY=False, current_theme="dark", DEBUG_MODE=False):
                 tree.bind("<Menu>", self.on_key_context_menu)
 
                 # Добавляем фрейм в панель
-                self.notebook.add(tab_frame, text=f"{l("loading")}...")
+                self.notebook.add(tab_frame, text=l("loading"))
 
                 tab_id = str(tab_frame)
 
@@ -380,7 +380,7 @@ def FM(RUN_IN_RECOVERY=False, current_theme="dark", DEBUG_MODE=False):
                         # Делаем окно модальным
                         path_window.grab_set()
 
-                        ttk.Label(path_window, text=f"{l("enter_path")}\n{l("available_disks")}: {get_available_disks()}").pack(pady=5, padx=10, anchor="w")
+                        ttk.Label(path_window, text=f'{l("enter_path")}\n{l("available_disks")}: {get_available_disks()}').pack(pady=5, padx=10, anchor="w")
 
                         # Текстовое поле
                         path_text = tk.StringVar(value=default_path)
@@ -413,7 +413,7 @@ def FM(RUN_IN_RECOVERY=False, current_theme="dark", DEBUG_MODE=False):
 
 
                 if not os.path.exists(path):
-                    messagebox.showerror(RS(), f"{l("path")} {l("not_found")}: {path}")
+                    messagebox.showerror(RS(), f'{l("path")} {l("not_found")}: {path}')
                     # Возвращаем старый путь в поле ввода, если ввели неверный
                     self.update_path_entry()
                     return
@@ -442,8 +442,8 @@ def FM(RUN_IN_RECOVERY=False, current_theme="dark", DEBUG_MODE=False):
                     self.update_path_entry()
                     self.update_toolbar_buttons()
                 except Exception as e:
-                    logger.exception(f"FM - {l("permission_error")} {path}")
-                    messagebox.showerror(RS(), f"{l("permission_error")}: {path}")
+                    logger.exception(f'FM - {l("permission_error")} {path}')
+                    messagebox.showerror(RS(), f'{l("permission_error")}: {path}')
 
 
 
@@ -767,7 +767,7 @@ def FM(RUN_IN_RECOVERY=False, current_theme="dark", DEBUG_MODE=False):
 
                 count = len(paths_to_delete)
 
-                if not messagebox.askyesno(RS(), f"{l("you_want_to_delete")} {count} {l("elements")}?" if count > 1 else f'{l("delete")} "{os.path.basename(paths_to_delete[0])}"?'):
+                if not messagebox.askyesno(RS(), f'{l("you_want_to_delete")} {count} {l("elements")}?' if count > 1 else f'{l("delete")} "{os.path.basename(paths_to_delete[0])}"?'):
                     return
 
                 # Получаем текущую таблицу и данные
@@ -823,8 +823,8 @@ def FM(RUN_IN_RECOVERY=False, current_theme="dark", DEBUG_MODE=False):
                         else:
                             os.remove(path)
                     except Exception as e:
-                        logger.exception(f"FM - {l("delete_error")} {path}")
-                        messagebox.showerror(RS(), f"{l("delete_error")} {os.path.basename(path)}:\n{e}")
+                        logger.exception(f'FM - {l("delete_error")} {path}')
+                        messagebox.showerror(RS(), f'{l("delete_error")} {os.path.basename(path)}:\n{e}')
 
                 # Обновляем и восстанавливаем фокус
                 self.on_refresh()
@@ -843,7 +843,7 @@ def FM(RUN_IN_RECOVERY=False, current_theme="dark", DEBUG_MODE=False):
                 
                 self.clipboard_data = {"paths": paths, "action": "copy"}
                 if DEBUG_MODE:
-                    logger.info(f"FM - {l("elements_copy")}: {len(paths)}")
+                    logger.info(f'FM - {l("elements_copy")}: {len(paths)}')
 
 
 
@@ -888,7 +888,7 @@ def FM(RUN_IN_RECOVERY=False, current_theme="dark", DEBUG_MODE=False):
                         elif action == "cut":
                             shutil.move(src_path, dest_path)
                     except:
-                        logger.exception(f"FM - {l("paste_error")} {src_path}")
+                        logger.exception(f'FM - {l("paste_error")} {src_path}')
 
                 if action == "cut":
                     self.clipboard_data = {"paths": [], "action": None}
@@ -910,14 +910,14 @@ def FM(RUN_IN_RECOVERY=False, current_theme="dark", DEBUG_MODE=False):
             # Получаем автора файла
             def get_author_and_version_file(self, path):
                 if os.path.isdir(path):
-                    return f"{l("no_data")} ({l("dir")})"
+                    return f'{l("no_data")} ({l("dir")})'
 
                 version = l("no_data")
                 author = l("no_data")
 
                 try:
                     # Получаем информацию о версии файла
-                    fixed_info = win32api.GetFileVersionInfo(path, '\\')
+                    fixed_info = win32api.GetFileVersionInfo(path, "\\")
                     if fixed_info:
                         ms = fixed_info["FileVersionMS"]
                         ls = fixed_info["FileVersionLS"]
@@ -960,7 +960,7 @@ def FM(RUN_IN_RECOVERY=False, current_theme="dark", DEBUG_MODE=False):
                     else:
                         return l("no")
                 except:
-                    logger.exception(f"FM - {l("access_check_error_for")} {path}")
+                    logger.exception(f'FM - {l("access_check_error_for")} {path}')
                     return l("error")
 
 
@@ -975,7 +975,7 @@ def FM(RUN_IN_RECOVERY=False, current_theme="dark", DEBUG_MODE=False):
 
                 # Создаём окно свойств
                 prop_win = tk.Toplevel(self.FM_GUI)
-                prop_win.title(f"{l("properties")}: {os.path.basename(item_path)}")
+                prop_win.title(f'{l("properties")}: {os.path.basename(item_path)}')
                 prop_win.geometry("350x450")
                 prop_win.transient(self.FM_GUI) # Связываем с главным окном
                 prop_win.grab_set() # Делаем окно модальным
@@ -1045,7 +1045,7 @@ def FM(RUN_IN_RECOVERY=False, current_theme="dark", DEBUG_MODE=False):
                         (l("file_version"), version),
                         (l("author"), author),
                         ("---", "---"),
-                        (f"{l("access_for")} " + self.user_name + "):", ""),
+                        (f'{l("access_for")} " + self.user_name + "):", "'),
                         (l("full_access"), acc_full),
                         (l("reading"), acc_read),
                         (l("changed"), acc_modify),
@@ -1054,8 +1054,8 @@ def FM(RUN_IN_RECOVERY=False, current_theme="dark", DEBUG_MODE=False):
                     ]
 
                 except:
-                    logger.exception(f"FM - {l("collecting_properties_error")} {item_path}")
-                    tree.insert("", "end", values=(l("error"), f"{l("read_file_properties_error")}:\n{e}"))
+                    logger.exception(f'FM - {l("collecting_properties_error")} {item_path}')
+                    tree.insert("", "end", values=(l("error"), f'{l("read_file_properties_error")}:\n{e}'))
                     properties_data = []
 
                 # Заполнение таблицы
@@ -1099,13 +1099,13 @@ def FM(RUN_IN_RECOVERY=False, current_theme="dark", DEBUG_MODE=False):
                     return None
 
                 if not new_name.strip():
-                    messagebox.showwarning(RS(), f"{l("name")} {l("not_empty")}", parent=self.FM_GUI)
+                    messagebox.showwarning(RS(), f'{l("name")} {l("not_empty")}', parent=self.FM_GUI)
                     return None
 
                 # Проверка на недопустимые символы
                 invalid_chars = '<>:"/\\|?*'
                 if any(char in new_name for char in invalid_chars):
-                    messagebox.showwarning(RS(), f"{l("name")} {l("invalid_characters")}:\n{invalid_chars}", parent=self.FM_GUI)
+                    messagebox.showwarning(RS(), f'{l("name")} {l("invalid_characters")}:\n{invalid_chars}', parent=self.FM_GUI)
                     return None
 
                 return new_name
@@ -1135,10 +1135,10 @@ def FM(RUN_IN_RECOVERY=False, current_theme="dark", DEBUG_MODE=False):
 
                 # Проверяем, что текущий каталог существует
                 if not os.path.isdir(current_dir):
-                    messagebox.showerror(RS(), f"{l("current")} {l("dir")} {l("not_found")}: {current_dir}", parent=self.FM_GUI)
+                    messagebox.showerror(RS(), f'{l("current")} {l("dir")} {l("not_found")}: {current_dir}', parent=self.FM_GUI)
                     return
 
-                new_name = self.ask_for_name(RS(), f"{l("new_name_for")}:\n{old_name}", initial_value=old_name)
+                new_name = self.ask_for_name(RS(), f'{l("new_name_for")}:\n{old_name}', initial_value=old_name)
 
                 if new_name is None:
                     return # Отмена
@@ -1159,28 +1159,28 @@ def FM(RUN_IN_RECOVERY=False, current_theme="dark", DEBUG_MODE=False):
                 if action == "rename":
                     try:
                         os.rename(old_path, new_path)
-                        logger.info(f"FM - {l("renamed")}: {old_path} -> {new_path}")
+                        logger.info(f'FM - {l("renamed")}: {old_path} -> {new_path}')
                         self.on_refresh()
 
                         # Пытаемся восстановить фокус на переименованном файле
                         tree.after(100, lambda: self.focus_item_by_path(new_path))
 
                     except Exception as e:
-                        logger.exception(f"FM - {l("error")} {l("when_renaming")}")
-                        messagebox.showerror(RS(), f"{l("error")} {l("when_renaming")}:\n{e}", parent=self.FM_GUI)
+                        logger.exception(f'FM - {l("error")} {l("when_renaming")}')
+                        messagebox.showerror(RS(), f'{l("error")} {l("when_renaming")}:\n{e}', parent=self.FM_GUI)
 
                 elif action == "create_path":
                     try:
                         os.mkdir(new_path)
-                        logger.info(f"FM - {l("created")} {l("dir")}: {new_path}")
+                        logger.info(f'FM - {l("created")} {l("dir")}: {new_path}')
                         self.on_refresh()
                     except Exception as e:
-                        logger.exception(f"FM - {l("create_dir_error")}")
-                        messagebox.showerror(RS(), f"{l("create_dir_error")}:\n{e}", parent=self.FM_GUI)
+                        logger.exception(f'FM - {l("create_dir_error")}')
+                        messagebox.showerror(RS(), f'{l("create_dir_error")}:\n{e}', parent=self.FM_GUI)
 
                 elif action == "create_file":
                     # Запрос содержимого
-                    content = simpledialog.askstring(RS(), f"{l("enter_data_file")}:\n{new_name}", parent=self.FM_GUI)
+                    content = simpledialog.askstring(RS(), f'{l("enter_data_file")}:\n{new_name}', parent=self.FM_GUI)
 
                     # Если пользователь нажал Отмена или не ввел содержимое
                     if content is None:
@@ -1190,11 +1190,11 @@ def FM(RUN_IN_RECOVERY=False, current_theme="dark", DEBUG_MODE=False):
                         with open(new_path, "w") as new_file:
                             new_file.write(content)
 
-                        logger.info(f"FM - {l("create_file")}:\n{new_path}")
+                        logger.info(f'FM - {l("create_file")}:\n{new_path}')
                         self.on_refresh()
                     except Exception as e:
-                        logger.exception(f"FM - {l("create_file_error")}")
-                        messagebox.showerror(RS(), f"{l("create_file_error")}:\n{e}", parent=self.FM_GUI)
+                        logger.exception(f'FM - {l("create_file_error")}')
+                        messagebox.showerror(RS(), f'{l("create_file_error")}:\n{e}', parent=self.FM_GUI)
 
 
 
@@ -1210,7 +1210,7 @@ def FM(RUN_IN_RECOVERY=False, current_theme="dark", DEBUG_MODE=False):
                         tree.focus(item_path)
                         tree.see(item_path) # Прокрутить до элемента
                 except:
-                    logger.exception(f"FM - {l("restore_focus_error")} {item_path}")
+                    logger.exception(f'FM - {l("restore_focus_error")} {item_path}')
 
 
 
@@ -1277,7 +1277,7 @@ def FM(RUN_IN_RECOVERY=False, current_theme="dark", DEBUG_MODE=False):
 
                     # Копировать данные
                     menu.add_command(label=l("copy_path"), command=lambda: self.copy_to_clipboard(target_path))
-                    menu.add_command(label=f"{l("copy")} {l("name")}", command=lambda: self.copy_to_clipboard(os.path.basename(target_path)))
+                    menu.add_command(label=f'{l("copy")} {l("name")}', command=lambda: self.copy_to_clipboard(os.path.basename(target_path)))
 
                 elif target_type == "directory":
                     # Меню для Каталога (пустого места)
@@ -1422,7 +1422,7 @@ def FM(RUN_IN_RECOVERY=False, current_theme="dark", DEBUG_MODE=False):
 
                 # Проверка, что источник все еще существует
                 if not os.path.exists(src_path):
-                    messagebox.showerror(RS(), f"{l("source_file_not_found")}:\n{src_path}")
+                    messagebox.showerror(RS(), f'{l("source_file_not_found")}:\n{src_path}')
                     self.clipboard_data = {"path": None, "action": None} # Очистить буфер
                     return
 
@@ -1445,8 +1445,8 @@ def FM(RUN_IN_RECOVERY=False, current_theme="dark", DEBUG_MODE=False):
                             else:
                                 os.remove(dest_path)
                         except Exception as e:
-                            logger.exception(f"FM - {l("replace_file_not_found")}")
-                            messagebox.showerror(RS(), f"{l("replace_file_not_found")}:\n{e}")
+                            logger.exception(f'FM - {l("replace_file_not_found")}')
+                            messagebox.showerror(RS(), f'{l("replace_file_not_found")}:\n{e}')
                             return
 
                 # Выполнение действия (Копирование или Перемещение)
@@ -1456,7 +1456,7 @@ def FM(RUN_IN_RECOVERY=False, current_theme="dark", DEBUG_MODE=False):
                             shutil.copytree(src_path, dest_path)
                         else:
                             shutil.copy2(src_path, dest_path)
-                        logger.info(f"FM - {src_path} {l("copied2")} {l("in")} {dest_path}")
+                        logger.info(f'FM - {src_path} {l("copied2")} {l("in")} {dest_path}')
 
                     elif action == "cut":
                         shutil.move(src_path, dest_path)
@@ -1465,8 +1465,8 @@ def FM(RUN_IN_RECOVERY=False, current_theme="dark", DEBUG_MODE=False):
                         self.clipboard_data = {"path": None, "action": None}
 
                 except Exception as e:
-                    logger.exception(f"FM - {l("paste_error")}")
-                    messagebox.showerror(RS(), f"{l("paste_error")} {action}:\n{e}")
+                    logger.exception(f'FM - {l("paste_error")}')
+                    messagebox.showerror(RS(), f'{l("paste_error")} {action}:\n{e}')
 
                 self.on_refresh()
 
@@ -1564,7 +1564,7 @@ def FM(RUN_IN_RECOVERY=False, current_theme="dark", DEBUG_MODE=False):
                         key = item["size"]
                     elif col == l("type"):
                         key = item["type"]
-                    elif col == f"{l("date")} {l("changes")}":
+                    elif col == f'{l("date")} {l("changes")}':
                         key = item["edited"]
                     else:
                         key = item["name"].lower()
@@ -1580,8 +1580,8 @@ def FM(RUN_IN_RECOVERY=False, current_theme="dark", DEBUG_MODE=False):
                 try:
                     os.startfile(file_path)
                 except Exception as e:
-                    logger.exception(f"FM - {l("open_file_error")} {file_path}")
-                    messagebox.showerror(RS(), f"{l("open_file_error")}:\n{e}")
+                    logger.exception(f'FM - {l("open_file_error")} {file_path}')
+                    messagebox.showerror(RS(), f'{l("open_file_error")}:\n{e}')
 
 
 
@@ -1708,7 +1708,7 @@ def FM(RUN_IN_RECOVERY=False, current_theme="dark", DEBUG_MODE=False):
                 # Обновляем заголовок вкладки, чтобы показать, что идет поиск
                 tab_id = self.get_current_tab_id()
                 if tab_id:
-                    self.notebook.tab(tab_id, text=f"{l("search")}...")
+                    self.notebook.tab(tab_id, text=l("search"))
 
                 # Сообщаем пользователю, что поиск начался
                 messagebox.showinfo(RS(), l("fm_search_text"))
@@ -1729,8 +1729,8 @@ def FM(RUN_IN_RECOVERY=False, current_theme="dark", DEBUG_MODE=False):
                         self.FM_GUI.after(0, self.add_search_result_to_table, item)
 
                 except Exception as e:
-                    logger.exception(f"FM - {l("search_error")}")
-                    self.FM_GUI.after(0, lambda err=e: messagebox.showerror(RS(), f"{l("search_error")}: {str(err)}"))
+                    logger.exception(f'FM - {l("search_error")}')
+                    self.FM_GUI.after(0, lambda err=e: messagebox.showerror(RS(), f'{l("search_error")}: {str(err)}'))
                 finally:
                     # После завершения поиска, финализируем его
                     self.FM_GUI.after(0, lambda: self.finalize_search(data, start_path, search_text))
@@ -1786,8 +1786,8 @@ def FM(RUN_IN_RECOVERY=False, current_theme="dark", DEBUG_MODE=False):
                         data["search_results"]["is_active"] = False
 
                 except Exception as e:
-                    logger.exception(f"FM - {l("search_error")}")
-                    messagebox.showerror(RS(), f"{l("search_error")}:\n{e}")
+                    logger.exception(f'FM - {l("search_error")}')
+                    messagebox.showerror(RS(), f'{l("search_error")}:\n{e}')
 
 
 
@@ -1811,7 +1811,7 @@ def FM(RUN_IN_RECOVERY=False, current_theme="dark", DEBUG_MODE=False):
                     if item["is_dir"]:
                         tree.item(item["path"], tags=("directory",))
                 except:
-                    logger.exception(f"FM - {l("search_error")}")
+                    logger.exception(f'FM - {l("search_error")}')
 
 
 
@@ -1847,9 +1847,9 @@ def FM(RUN_IN_RECOVERY=False, current_theme="dark", DEBUG_MODE=False):
                                     if found_item:
                                         yield found_item # Возвращаем найденный элемент
                                 except:
-                                    logger.exception(f"FM - {l("info_file_error")} {item_path}")
+                                    logger.exception(f'FM - {l("info_file_error")} {item_path}')
                     except:
-                        logger.exception(f"FM - {l("read_dir_error")} {start_path}")
+                        logger.exception(f'FM - {l("read_dir_error")} {start_path}')
 
                 # Рекурсивный поиск
                 else:
@@ -1871,7 +1871,7 @@ def FM(RUN_IN_RECOVERY=False, current_theme="dark", DEBUG_MODE=False):
                                         "ext": ""
                                     }
                                 except:
-                                    logger.exception(f"FM - {l("read_dir_error")} {dir_path}")
+                                    logger.exception(f'FM - {l("read_dir_error")} {dir_path}')
 
                         # Ищем совпадения в именах файлов
                         for file_name in files:
@@ -1885,7 +1885,7 @@ def FM(RUN_IN_RECOVERY=False, current_theme="dark", DEBUG_MODE=False):
                                     if found_item:
                                         yield found_item # Возвращаем найденный элемент
                                 except:
-                                    logger.exception(f"FM - {l("read_file_error")} {file_path}")
+                                    logger.exception(f'FM - {l("read_file_error")} {file_path}')
 
 
 
@@ -1905,7 +1905,7 @@ def FM(RUN_IN_RECOVERY=False, current_theme="dark", DEBUG_MODE=False):
 
     except Exception as e:
         logger.exception(l("fm_critical_error"))
-        messagebox.showerror(RS(), f"{l("fm_critical_error")}\n{e}")
+        messagebox.showerror(RS(), f'{l("fm_critical_error")}\n{e}')
 
 if __name__ == "__main__":
     from config import THEME, DEFAULT_THEME

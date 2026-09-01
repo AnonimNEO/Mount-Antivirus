@@ -6,9 +6,9 @@
 # Прочитать полную версию лицензии вы можете по ссылке Фонда Свободного Программного Обеспечения - https://www.gnu.org/licenses/gpl-3.0.html
 # Или в файле COPYING.txt в архиве с установщиком
 # Copyleft 🄯 NEO Organization, Departament K 2024 - 2026
-# Coded by @AnonimNEO (Telegram)
+# Coded by AnonimNEO (Github)
 
-SCARECROW_PROTECTION_VERSION = "0.3.18 Beta"
+SCARECROW_PROTECTION_VERSION = "0.3.19 Beta"
 
 def SP(RUN_IN_RECOVERY=False, current_disc_r=False, current_theme=False, DEBUG_MODE=False):
     # Интерфейс
@@ -30,6 +30,7 @@ def SP(RUN_IN_RECOVERY=False, current_disc_r=False, current_theme=False, DEBUG_M
     from OF import pac, apply_global_theme, get_user_name, create_menubar
     from languages import l
 
+    
     try:
         if RUN_IN_RECOVERY:
             current_disc = current_disc_r
@@ -247,6 +248,7 @@ def SP(RUN_IN_RECOVERY=False, current_disc_r=False, current_theme=False, DEBUG_M
         }
 
 
+
         class SPI:
             def __init__(self, master):
                 self.master = master
@@ -318,9 +320,9 @@ def SP(RUN_IN_RECOVERY=False, current_disc_r=False, current_theme=False, DEBUG_M
             def create_path(self, path):
                 try:
                     os.makedirs(path, exist_ok=True)
-                    logger.info(f"SP - {l("create_dir")}: {path}")
+                    logger.info(f'SP - {l("create_dir")}: {path}')
                 except OSError as e:
-                    logger.error(f"SP - {l("create_dir_error")} {path}:\n{e}")
+                    logger.error(f'SP - {l("create_dir_error")} {path}:\n{e}')
 
 
 
@@ -328,9 +330,9 @@ def SP(RUN_IN_RECOVERY=False, current_disc_r=False, current_theme=False, DEBUG_M
                 try:
                     with open(path, "w"):
                         pass # Создаём пустой файл
-                    logger.info(f"SP - {l("create_file")}: {path}")
+                    logger.info(f'SP - {l("create_file")}: {path}')
                 except OSError as e:
-                    logger.error(f"SP - {l("create_file_error")} {path}:\n{e}")
+                    logger.error(f'SP - {l("create_file_error")} {path}:\n{e}')
 
 
 
@@ -338,9 +340,9 @@ def SP(RUN_IN_RECOVERY=False, current_disc_r=False, current_theme=False, DEBUG_M
                try:
                     with winreg.CreateKeyEx(winreg.HKEY_LOCAL_MACHINE, key_path, 0, winreg.KEY_ALL_ACCESS) as key:
                         winreg.SetValueEx(key, value_name, 0, value_type, value_data)
-                    logger.info(f"SP - {l("create_key")}: {key_path}\\{value_name} = {value_data}")
+                    logger.info(f'SP - {l("create_key")}: {key_path}\\{value_name} = {value_data}')
                except OSError as e:
-                    logger.error(f"SP - {l("create_key_error")} {key_path}\\{value_name} = {value_data}:\n{e}")
+                    logger.error(f'SP - {l("create_key_error")} {key_path}\\{value_name} = {value_data}:\n{e}')
 
 
 
@@ -348,9 +350,9 @@ def SP(RUN_IN_RECOVERY=False, current_disc_r=False, current_theme=False, DEBUG_M
                 try:
                     if os.path.exists(path):
                         shutil.rmtree(path)
-                        logger.info(f"SP - {l("delete_dir")}: {path}")
+                        logger.info(f'SP - {l("delete_dir")}: {path}')
                 except OSError as e:
-                    logger.error(f"SP - {l("delete_dir_error")} {path}:\n{e}")
+                    logger.error(f'SP - {l("delete_dir_error")} {path}:\n{e}')
 
 
 
@@ -358,9 +360,9 @@ def SP(RUN_IN_RECOVERY=False, current_disc_r=False, current_theme=False, DEBUG_M
                 try:
                     if os.path.exists(path):
                         os.remove(path)
-                        logger.info(f"SP - {l("file_delete")}: {path}")
+                        logger.info(f'SP - {l("file_delete")}: {path}')
                 except OSError as e:
-                    logger.error(f"SP - {l("file_delete_error")} {path}:\n{e}")
+                    logger.error(f'SP - {l("file_delete_error")} {path}:\n{e}')
 
 
 
@@ -368,18 +370,18 @@ def SP(RUN_IN_RECOVERY=False, current_disc_r=False, current_theme=False, DEBUG_M
                 try:
                     with winreg.OpenKeyEx(winreg.HKEY_LOCAL_MACHINE, key_path, 0, winreg.KEY_ALL_ACCESS) as key:
                         winreg.DeleteValue(key, value_name)
-                    logger.info(f"SP - {l("delete_key")}: {key_path}\\{value_name}")
+                    logger.info(f'SP - {l("delete_key")}: {key_path}\\{value_name}')
                 except FileNotFoundError:
-                    logger.info(f"SP - {l("key_not_found")}: {key_path}\\{value_name}")
+                    logger.info(f'SP - {l("key_not_found")}: {key_path}\\{value_name}')
                 except OSError as e:
-                    logger.error(f"SP - {l("delete_key_error")} {key_path}\\{value_name}:\n{e}")
+                    logger.error(f'SP - {l("delete_key_error")} {key_path}\\{value_name}:\n{e}')
 
 
 
             def run_simulation(self):
                 for program, info in PROGRAM_INFO.items():
                     if self.checkbox_vars[program].get():
-                        logger.info(f"SP - {l("start_simulation")} {program}")
+                        logger.info(f'SP - {l("start_simulation")} {program}')
                         if "path" in info:
                             for path in info["path"]:
                                 self.create_path(path)
@@ -390,7 +392,7 @@ def SP(RUN_IN_RECOVERY=False, current_disc_r=False, current_theme=False, DEBUG_M
                             for key_path, key_values in info["registry_keys"].items():
                                 for value_name, value_data in key_values.items():
                                     self.create_registry_key(key_path, value_name, value_data)
-                        logger.info(f"SP - {l("simulation_for")} {pr<ogram} {l("completed")}")
+                        logger.info(f'SP - {l("simulation_for")} {program} {l("completed")}')
                 messagebox.showinfo(RS(), l("simulation_completed"))
 
 
@@ -400,7 +402,7 @@ def SP(RUN_IN_RECOVERY=False, current_disc_r=False, current_theme=False, DEBUG_M
                     for program, info in PROGRAM_INFO.items():
                         if self.checkbox_vars[program].get():
                             if DEBUG_MODE:
-                                logger.info(f"SP - {l("delete_simulation")} {program}")
+                                logger.info(f'SP - {l("delete_simulation")} {program}')
                             if "path" in info:
                                 for path in info["path"]:
                                     self.delete_path(path)
@@ -411,12 +413,11 @@ def SP(RUN_IN_RECOVERY=False, current_disc_r=False, current_theme=False, DEBUG_M
                                 for key_path, key_values in info["registry_keys"].items():
                                     for value_name, _ in key_values.items():
                                         self.delete_registry_key(key_path, value_name)
-                            logger.info(f"SP - {l("delete_simulation_for")} {program} {l("completed")}")
+                            logger.info(f'SP - {l("delete_simulation_for")} {program} {l("completed")}')
                     messagebox.showinfo(RS(), l("delete_completed"))
 
         SP_GUI = tk.Tk()
         apply_global_theme(SP_GUI, current_theme)
-        # GUI_SP = SP(SP_GUI)
         SPI(SP_GUI)
 
         create_menubar(SP_GUI, RUN_IN_RECOVERY, DEBUG_MODE=DEBUG_MODE)
